@@ -1,0 +1,11 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+Person(client, "Client", "A client that has an account at the comic book store.")
+
+Container(application, "Wep Application", "REACT JS", "Delivers the data requested (client, inventory or tournament) in a single page application.")
+
+
+Rel(client, application, "Visits shop.menardcomics.com using", "HTTPS")
+
+
+@enduml
