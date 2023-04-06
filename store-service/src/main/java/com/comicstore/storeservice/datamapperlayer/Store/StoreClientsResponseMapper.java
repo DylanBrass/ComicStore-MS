@@ -1,11 +1,6 @@
 package com.comicstore.storeservice.datamapperlayer.Store;
 
-import com.comicstore.storeservice.datalayer.Store.Store;
-import com.comicstore.storeservice.presentationlayer.Store.StoreClientsResponseModel;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-
-import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface StoreClientsResponseMapper {

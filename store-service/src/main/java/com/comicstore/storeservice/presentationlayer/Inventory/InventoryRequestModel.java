@@ -11,4 +11,5 @@ import lombok.Value;
 public class InventoryRequestModel {
     private String storeId;
     private String type;
+    private String status;
 }

@@ -1,13 +1,17 @@
 package com.comicstore.storeservice.datalayer.Store;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.Objects;
 
 @Embeddable
 public class Address {
 
+    @Column(unique = true)
     private String streetAddress;
     private String city;
     private String province;
@@ -45,20 +49,4 @@ public class Address {
         return postalCode;
     }
 
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
-}
+  }

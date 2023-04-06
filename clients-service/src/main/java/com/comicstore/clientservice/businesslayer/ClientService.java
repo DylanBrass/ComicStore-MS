@@ -9,7 +9,10 @@ import java.util.List;
 public interface ClientService {
     List<ClientResponseModel> getClients();
 
-    ClientResponseModel getClientById(String clientId);
+    List<ClientResponseModel> getStoreClients(String storeId);
+
+
+        ClientResponseModel getClientById(String clientId);
 
     ClientResponseModel createClient(String storeId,ClientRequestModel clientRequestModel);
 

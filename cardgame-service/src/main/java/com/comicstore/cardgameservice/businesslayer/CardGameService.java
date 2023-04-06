@@ -9,19 +9,24 @@ import com.comicstore.cardgameservice.presentationlayer.SetResponseModel;
 import java.util.List;
 
 public interface CardGameService {
-List<CardGameResponseModel> getCardGames();
+    List<CardGameResponseModel> getCardGames();
 
-SetResponseModel addCardGameSet(String cardGameId, SetRequestModel setRequestModel);
+    CardGameResponseModel updateCardGame(String cardGameId, CardGameRequestModel cardGameRequestModel);
 
-List<SetResponseModel> getCardGameSets(String cardGameId);
 
-List<SetResponseModel> getAllSets();
+    CardGameResponseModel getCardGame(String cardGameId);
 
-void deleteCardGame(String cardId);
+    SetResponseModel addCardGameSet(String cardGameId, SetRequestModel setRequestModel);
 
-CardGameResponseModel addCardGame(CardGameRequestModel cardGameRequestModel);
+    List<SetResponseModel> getCardGameSets(String cardGameId);
 
-void deleteCardGameSet(String setId);
+    List<SetResponseModel> getAllSets();
 
-SetResponseModel updateCardGameSet(String setId, SetRequestModel setRequestModel);
+    void deleteCardGame(String cardId);
+
+    CardGameResponseModel addCardGame(CardGameRequestModel cardGameRequestModel);
+
+    void deleteCardGameSet(String setId);
+
+    SetResponseModel updateCardGameSet(String setId, SetRequestModel setRequestModel);
 }

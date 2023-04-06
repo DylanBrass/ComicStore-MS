@@ -11,9 +11,8 @@ import org.mapstruct.Mappings;
 public interface SetRequestMapper {
     @Mappings({
             @Mapping(target = "id", ignore = true),
+            @Mapping(target = "setIdentifier", ignore = true),
             @Mapping(expression = "java(cardIdentifier)",target = "cardIdentifier")
-
-
     })
     Set entityToResponseModel(SetRequestModel set, CardIdentifier cardIdentifier);
 

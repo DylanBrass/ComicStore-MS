@@ -7,5 +7,5 @@ import java.util.List;
 public interface SetRepository  extends JpaRepository<Set, Integer> {
     List<Set> getSetByCardIdentifier_CardId(String cardId);
 
-    Set getSetById(String setId);
+    Set getSetBySetIdentifier_SetId(String setId);
 }

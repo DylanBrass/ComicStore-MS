@@ -1,14 +1,12 @@
 package com.comicstore.clientservice.presentationlayer;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
-@Value
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ClientResponseModel {
+@EqualsAndHashCode(callSuper=false)
+@Data
+@AllArgsConstructor
+public class ClientResponseModel extends RepresentationModel<ClientResponseModel> {
     private String storeId;
     private String clientId;
     private String firstName;

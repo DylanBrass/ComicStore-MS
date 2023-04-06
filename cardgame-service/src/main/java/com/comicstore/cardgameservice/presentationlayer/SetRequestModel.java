@@ -1,5 +1,6 @@
 package com.comicstore.cardgameservice.presentationlayer;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,9 +14,11 @@ import java.util.Date;
 public class SetRequestModel {
     private String cardId;
 
+    @NotBlank
     private String name;
 
-    private Date releaseDate;
+    @NotBlank
+    private String releaseDate;
 
     private int numberOfCards;
 }

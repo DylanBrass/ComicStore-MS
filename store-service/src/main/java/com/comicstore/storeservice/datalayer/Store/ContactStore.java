@@ -25,11 +25,4 @@ public class ContactStore {
             return phoneNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-}
+   }

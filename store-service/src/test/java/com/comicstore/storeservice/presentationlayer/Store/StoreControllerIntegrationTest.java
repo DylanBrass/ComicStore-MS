@@ -17,6 +17,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -29,7 +31,7 @@ class StoreControllerIntegrationTest {
 
     private final String BASE_URI_STORE = "/api/lab2/v1/stores";
 
-    private final String VALID_STORE_DATE_OPENED = "2016-05-12T04:00:00.000+00:00";
+    private final String VALID_STORE_DATE_OPENED = "2016-05-12";
     private final String VALID_STORE_PROVINCE = "Quebec";
     private final String VALID_STORE_CITY = "Windsor";
     private final String VALID_STORE_POSTAL_CODE = "J1S 5J4";
@@ -51,8 +53,8 @@ class StoreControllerIntegrationTest {
 
     @Test
     void WhenCreateStoreWithValidValues_thenReturnNewStore() {
-        String date = "2023/04/05";
-        String expectedDate = "2023-04-05T04:00:00.000+00:00";
+        String date = "2023-04-05";
+        String expectedDate = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -83,7 +85,7 @@ class StoreControllerIntegrationTest {
 
     @Test
     void WhenCreateStoreWithInvalidStatus_thenThrowInvalidInputException() {
-        String date = "2023/04/05";
+        String date = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -239,8 +241,8 @@ class StoreControllerIntegrationTest {
     @Test
     public void WhenUpdateStoreWithValidValues_thenReturnUpdatedStore() {
         //arrange
-        String date = "2023/04/05";
-        String expectedDate = "2023-04-05T04:00:00.000+00:00";
+        String date = "2023-04-05";
+        String expectedDate = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -272,7 +274,7 @@ class StoreControllerIntegrationTest {
     @Test
     public void WhenUpdateStoreWithInvalidStoreId_thenThrowNotFoundException() {
         //arrange
-        String date = "2023/04/05";
+        String date = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -297,9 +299,9 @@ class StoreControllerIntegrationTest {
     }
 
     @Test
-    public void WhenUpdateStoreWithInvalidStatus_thenThrowNotFoundException() {
+    public void WhenUpdateStoreWithInvalidStatus_thenThrowInvalidInputExceptionn() {
         //arrange
-        String date = "2023/04/05";
+        String date = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -324,9 +326,9 @@ class StoreControllerIntegrationTest {
     }
 
     @Test
-    public void WhenUpdateStoreWithInvalidPostalCode_thenThrowNotFoundException() {
+    public void WhenUpdateStoreWithInvalidPostalCode_thenThrowInvalidInputException() {
         //arrange
-        String date = "2023/04/05";
+        String date = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -350,9 +352,9 @@ class StoreControllerIntegrationTest {
     }
 
     @Test
-    public void WhenUpdateStoreWithInvalidEmail_thenThrowNotFoundException() {
+    public void WhenUpdateStoreWithInvalidEmail_thenThrowInvalidInputException() {
         //arrange
-        String date = "2023/04/05";
+        String date = "2023-04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -375,19 +377,19 @@ class StoreControllerIntegrationTest {
                 .isEqualTo("Email entered is not valid : " + storeRequestModel.getEmail());
     }
     @Test
-    public void WhenUpdateStoreWithInvalidDateFormat_thenThrowNotFoundException() {
+    public void WhenUpdateStoreWithInvalidDateFormat_thenThrowInvalidInputException() {
         //arrange
-        String date = "2023/04/05";
+        String date = "2023/04-05";
         String expectedStreetAddress = "StreetAddress";
         String expectedCity = "City";
         String expectedProvince = "Province";
         String expectedPostalCode = "J5R 5J4";
         String expectedPhone = "111-111-1111";
-        String expectedEmail = "d.com";
+        String expectedEmail = "d@gmail.com";
         String expectedStatus = "OPEN";
 
         StoreRequestModel storeRequestModel = StoreRequestModel.builder()
-                .dateOpened(new SimpleDateFormat(date)).streetAddress(expectedStreetAddress)
+                .dateOpened(date).streetAddress(expectedStreetAddress)
                 .city(expectedCity).province(expectedProvince)
                 .postalCode(expectedPostalCode)
                 .email(expectedEmail).status(expectedStatus).phoneNumber(expectedPhone).build();
@@ -401,7 +403,37 @@ class StoreControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_STORE + "/" + VALID_STORE_ID)
                 .jsonPath("$.message")
-                .isEqualTo("SimpleDateFormat opened entered is not in format YYYY-MM-DD : " + storeRequestModel.getDateOpened());
+                .isEqualTo("Date opened entered is not in format YYYY-MM-DD : " + storeRequestModel.getDateOpened());
+    }
+
+    @Test
+    public void WhenUpdateStoreWithInvalidPhone_thenThrowInvalidInputException() {
+        //arrange
+        String date = "2023-04-05";
+        String expectedStreetAddress = "StreetAddress";
+        String expectedCity = "City";
+        String expectedProvince = "Province";
+        String expectedPostalCode = "J5R 5J4";
+        String expectedPhone = "111-2-1111";
+        String expectedEmail = "d@gmail.com";
+        String expectedStatus = "OPEN";
+
+        StoreRequestModel storeRequestModel = StoreRequestModel.builder()
+                .dateOpened(date).streetAddress(expectedStreetAddress)
+                .city(expectedCity).province(expectedProvince)
+                .postalCode(expectedPostalCode)
+                .email(expectedEmail).status(expectedStatus).phoneNumber(expectedPhone).build();
+
+        //act and assert
+        webTestClient.put().uri(BASE_URI_STORE + "/" + VALID_STORE_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(storeRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+                .isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_STORE + "/" + VALID_STORE_ID)
+                .jsonPath("$.message")
+                .isEqualTo("Phone entered is not valid : " + storeRequestModel.getPhoneNumber());
     }
 
     @Test
@@ -413,6 +445,21 @@ class StoreControllerIntegrationTest {
                 .exchange().expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath("$.length()").isEqualTo(expectedNumInventories);
+    }
+
+    @Test
+    void WhenStoresIdIsInInvalid_thenThrowNotFoundException() {
+        String invalidStoreId = "1";
+        webTestClient.get()
+                .uri(BASE_URI_STORE + "/" + invalidStoreId + "/inventories")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isEqualTo(HttpStatus.NOT_FOUND)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_STORE + "/" + invalidStoreId + "/inventories")
+                .jsonPath("$.message")
+                .isEqualTo("Store with id : " + invalidStoreId + " was not found !");
     }
 
     @Test
@@ -433,7 +480,7 @@ class StoreControllerIntegrationTest {
 
     @Test
     void WhenTwoStoresWithSameLocation_thenThrowDuplicateStoreLocationException() {
-        String date = "2023/04/05";
+        String date = "2023-04-05";
         String expectedStreetAddress = "971 Oneill Trail";
         String expectedCity = "City";
         String expectedProvince = "Province";
@@ -482,11 +529,10 @@ class StoreControllerIntegrationTest {
     }
 
     private StoreRequestModel createNewStoreRequestModel(String date, String s_Add, String city, String province, String postalCode, String email, String status, String phoneNumber) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
         return StoreRequestModel.builder()
-                .dateOpened(new SimpleDateFormat(date)).streetAddress(s_Add)
+                .dateOpened(LocalDate.parse(date).toString()).streetAddress(s_Add)
                 .city(city).province(province)
                 .postalCode(postalCode)
                 .email(email).status(status).phoneNumber(phoneNumber).build();

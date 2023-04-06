@@ -3,6 +3,7 @@ package com.comicstore.cardgameservice.datalayer;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -21,7 +22,7 @@ public class CardGame {
 
     private String company;
 
-    private Date releaseDate;
+    private LocalDate releaseDate;
 
     private Boolean isActive;
 
@@ -29,7 +30,7 @@ public class CardGame {
         this.cardIdentifier = new CardIdentifier();
     }
 
-    public CardGame(String cardGameName, String company, Date releaseDate, Boolean isActive) {
+    public CardGame(String cardGameName, String company, LocalDate releaseDate, Boolean isActive) {
         this.cardIdentifier = new CardIdentifier();
         this.cardGameName = cardGameName;
         this.company = company;

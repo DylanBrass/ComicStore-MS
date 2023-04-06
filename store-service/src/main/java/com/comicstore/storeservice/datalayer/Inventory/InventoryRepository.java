@@ -8,4 +8,8 @@ public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
 Inventory getInventoryByInventoryIdentifier_InventoryId(String inventoryId);
 
 List<Inventory> getInventoriesByStoreIdentifier_StoreId(String storeId);
+
+Boolean existsByInventoryIdentifier_InventoryId(String inventoryId);
+
+
 }

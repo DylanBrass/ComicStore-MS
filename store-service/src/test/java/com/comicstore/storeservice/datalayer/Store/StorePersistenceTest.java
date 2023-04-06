@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,7 +23,7 @@ class StorePersistenceTest {
     @BeforeEach
     public void setup(){
         storeRepository.deleteAll();
-        presavedStore1 = storeRepository.save(new Store(new SimpleDateFormat(),new Address("45 rue des Pensees","City of Quebec","Quebec","J5R-5J4"), Status.OPEN));
+        presavedStore1 = storeRepository.save(new Store(LocalDate.now(),new Address("45 rue des Pensees","City of Quebec","Quebec","J5R-5J4"), Status.OPEN));
     }
     @Test
     void findByStoreIdentifier_ShouldSucceed() {
@@ -59,7 +59,7 @@ class StorePersistenceTest {
     //post
     @Test
     void createInventoryWithValidValues_ShouldSucceed(){
-        SimpleDateFormat expectedDate = new SimpleDateFormat();
+        LocalDate expectedDate = LocalDate.now();
         String expectedStreetAddress = "StreetAddress";
         String expectedCity= "City";
         String expectedProvince= "Province";

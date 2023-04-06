@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -23,17 +25,23 @@ public class Inventory {
     @Embedded
     private StoreIdentifier storeIdentifier;
 
-    private Date lastUpdated;
+    private LocalDate lastUpdated;
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @Enumerated(EnumType.STRING)
+    private InventoryStatus status;
 
 
     public Inventory() {
         this.inventoryIdentifier = new InventoryIdentifier();
     }
 
-    public Inventory(StoreIdentifier storeIdentifier, Date lastUpdated) {
+    public Inventory(StoreIdentifier storeIdentifier, LocalDate lastUpdated, Type type, InventoryStatus status) {
+        inventoryIdentifier = new InventoryIdentifier();
         this.storeIdentifier = storeIdentifier;
         this.lastUpdated = lastUpdated;
+        this.type = type;
+        this.status = status;
     }
 }

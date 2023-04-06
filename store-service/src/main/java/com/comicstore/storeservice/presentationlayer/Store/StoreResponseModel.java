@@ -1,24 +1,26 @@
 package com.comicstore.storeservice.presentationlayer.Store;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 
-@Value
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class StoreResponseModel {
+@EqualsAndHashCode(callSuper=false)
+@Data
+@AllArgsConstructor
+public class StoreResponseModel extends RepresentationModel<StoreResponseModel> {
+
     private String storeId;
-    private Date dateOpened;
+    private LocalDate dateOpened;
     private String streetAddress;
     private String city;
     private String province;
     private String postalCode;
 
     private String email;
+    private String status;
 
     private String phoneNumber;
 

@@ -198,26 +198,3 @@ insert into clients (client_id, store_id, first_name, last_name, email, phone_nu
 insert into clients (client_id, store_id, first_name, last_name, email, phone_number, total_bought, rebate) values ('12e1f5ec-8df7-4c91-8e6b-89ff41813430', '1b5fb4a0-8761-47a6-bacb-ab3c99f8c480', 'Bucky', 'Downgate', 'bdowngate5h@hao123.com', '767-315-9754', 1658.17, 15);
 insert into clients (client_id, store_id, first_name, last_name, email, phone_number, total_bought, rebate) values ('5c83421e-95fa-4361-b390-5ea1b5df3273', '1b5fb4a0-8761-47a6-bacb-ab3c99f8c480', 'Rita', 'Ropars', 'rropars5i@tinypic.com', '846-716-4286', 1122.55, 10);
 insert into clients (client_id, store_id, first_name, last_name, email, phone_number, total_bought, rebate) values ('92a8dd4b-c8f6-4d0e-9dae-1a5f7932f335', 'c293820a-d989-48ff-8410-24062a69d99e', 'Demetra', 'Toxell', 'dtoxell5j@yellowbook.com', '752-560-1801', 3098.65, 20);
-
-
-
-insert into stores (store_id, inventory_id, date_opened, street_address, province, city, postal_code, email, phone_number) values ('c293820a-d989-48ff-8410-24062a69d99e', 'd9dfcbd7-2bff-4a45-91d8-adae65c80f0c' , '2016/05/12', '971 Oneill Trail', 'Québec', 'Windsor', 'J1S', 'email@email1.com', '222-666-7777');
-insert into stores (store_id, inventory_id, date_opened, street_address, province, city, postal_code, email, phone_number) values ('1b5fb4a0-8761-47a6-bacb-ab3c99f8c480', '61865bbd-8f75-4ff9-b8a1-def97aa0a73c' , '2012/06/08', '73046 Clarendon Terrace', 'Québec', 'Magog', 'J1X', 'email1@email2.com', '255-777-8889');
-
-
-
-insert into inventories (inventory_id,store_id, last_updated, type) values ('d9dfcbd7-2bff-4a45-91d8-adae65c80f0c','c293820a-d989-48ff-8410-24062a69d99e', '2022/03/26','IN_STORE');
-insert into inventories (inventory_id,store_id, last_updated, type) values ('61865bbd-8f75-4ff9-b8a1-def97aa0a73c','1b5fb4a0-8761-47a6-bacb-ab3c99f8c480', '2022/07/06','OUTSIDE_STORE');
-
-
-
-insert into card_games (card_id, card_game_name, company, release_date, is_active) values ('6dfc9e76-1aa7-4786-8398-f4ae25737324', 'Magic The Gathering', 'Wizards of the Coast', '2022/08/01', true);
-insert into card_games (card_id, card_game_name, company, release_date, is_active) values ('87236243-6ff0-427d-8ee7-33b806fde99c', 'Pokement TCG', 'The Pokémon Company', '2022/03/19', true);
-insert into card_games (card_id, card_game_name, company, release_date, is_active) values ('579a2484-43f4-413c-a97a-d0f1d9c980e4', 'Dragonball TCG', 'Bandai', '2022/09/23', true);
-insert into card_games (card_id, card_game_name, company, release_date, is_active) values ('80c063e1-2cea-4145-87e4-aafbc5854795', 'Yu-Gi-Ho!', 'Konami', '2022/12/02', true);
-
-
-
-insert into card_game_sets (card_id, name, release_date, number_of_cards) values ('579a2484-43f4-413c-a97a-d0f1d9c980e4', 'Warriors Return', '2008/08/18',113);
-insert into card_game_sets (card_id, name, release_date, number_of_cards) values ('579a2484-43f4-413c-a97a-d0f1d9c980e4', 'The Awakening', '2008/10/17',100);
-insert into card_game_sets (card_id, name, release_date, number_of_cards) values ('6dfc9e76-1aa7-4786-8398-f4ae25737324', 'Limited Edition Alpha', '1993/08/05',295);

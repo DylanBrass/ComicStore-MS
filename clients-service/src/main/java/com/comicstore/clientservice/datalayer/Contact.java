@@ -14,7 +14,7 @@ public class Contact {
     public Contact() {
     }
 
-    public Contact(@NotNull String email,@NotNull String phoneNumber) {
+    public Contact(String email, String phoneNumber) {
         Objects.requireNonNull(this.email = email);
         Objects.requireNonNull(this.phoneNumber = phoneNumber);
     }

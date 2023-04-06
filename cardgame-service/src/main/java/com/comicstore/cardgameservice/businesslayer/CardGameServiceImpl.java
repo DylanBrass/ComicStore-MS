@@ -1,5 +1,9 @@
 package com.comicstore.cardgameservice.businesslayer;
 
+import com.comicstore.cardgameservice.Utils.Exceptions.DuplicateCardGameNameException;
+import com.comicstore.cardgameservice.Utils.Exceptions.DuplicateSetNameException;
+import com.comicstore.cardgameservice.Utils.Exceptions.InvalidInputException;
+import com.comicstore.cardgameservice.Utils.Exceptions.NotFoundException;
 import com.comicstore.cardgameservice.datalayer.*;
 import com.comicstore.cardgameservice.datamapperlayer.CardGameRequestMapper;
 import com.comicstore.cardgameservice.datamapperlayer.CardGameResponseMapper;
@@ -9,14 +13,16 @@ import com.comicstore.cardgameservice.presentationlayer.CardGameRequestModel;
 import com.comicstore.cardgameservice.presentationlayer.CardGameResponseModel;
 import com.comicstore.cardgameservice.presentationlayer.SetRequestModel;
 import com.comicstore.cardgameservice.presentationlayer.SetResponseModel;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class CardGameServiceImpl implements CardGameService{
+public class CardGameServiceImpl implements CardGameService {
     private final CardGameRepository cardGameRepository;
     private final SetRepository setRepository;
+
     //private final TournamentRepository tournamentRepository;
     private final SetRequestMapper setRequestMapper;
     private final SetResponseMapper setResponseMapper;
@@ -40,19 +46,60 @@ public class CardGameServiceImpl implements CardGameService{
     }
 
     @Override
+    public CardGameResponseModel updateCardGame(String cardGameId, CardGameRequestModel cardGameRequestModel) {
+
+        CardGame existingCardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(cardGameId);
+        if (existingCardGame == null)
+            throw new NotFoundException("Card game with id : " + cardGameId + " was not found !");
+
+        CardGame cardGame = cardGameRequestMapper.requestModelToEntity(cardGameRequestModel);
+        cardGame.setCardIdentifier(existingCardGame.getCardIdentifier());
+        cardGame.setId(existingCardGame.getId());
+        try {
+            return cardGameResponseMapper.entityToResponseModel(cardGameRepository.save(cardGame));
+        } catch (
+                DataAccessException ex) {
+            if (ex.getMessage().contains("constraint [card_game_name]")) {
+                throw new DuplicateCardGameNameException("Name provided is a duplicate : " + cardGameRequestModel.getCardGameName());
+            } else throw new InvalidInputException(("An unknown error as occurred"));
+        }
+    }
+
+    @Override
+    public CardGameResponseModel getCardGame(String cardGameId) {
+        CardGame cardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(cardGameId);
+        if (cardGame == null)
+            throw new NotFoundException("Card game with id : " + cardGameId + " was not found !");
+
+        return cardGameResponseMapper.entityToResponseModel(cardGame);
+    }
+
+
+    @Override
     public SetResponseModel addCardGameSet(String cardGameId, SetRequestModel setRequestModel) {
 
         CardGame cardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(cardGameId);
 
-        if(cardGame == null){
-         return null;
+        if (cardGame == null) {
+            throw new NotFoundException("No card game with id : " + cardGameId + " was found !");
         }
 
         Set set = setRequestMapper.entityToResponseModel(setRequestModel, new CardIdentifier(setRequestModel.getCardId()));
 
         set.setCardIdentifier(cardGame.getCardIdentifier());
 
-        return setResponseMapper.entityToResponseModel(setRepository.save(set));
+        if (cardGame.getReleaseDate().compareTo(set.getReleaseDate()) > 0)
+            throw new InvalidInputException("A set can't be release be for the game : \nGame was released : " + cardGame.getReleaseDate() + " \nSimpleDateFormat entered for set : " + set.getReleaseDate());
+
+
+        try {
+            return setResponseMapper.entityToResponseModel(setRepository.save(set));
+        } catch (
+                DataAccessException ex) {
+            if (ex.getMessage().contains("constraint [name]")) {
+                throw new DuplicateSetNameException("Name provided is a duplicate : " + setRequestModel.getName());
+            } else throw new InvalidInputException(("An unknown error as occurred"));
+        }
     }
 
     @Override
@@ -70,12 +117,12 @@ public class CardGameServiceImpl implements CardGameService{
     public void deleteCardGame(String cardId) {
         CardGame cardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(cardId);
 
-        if(cardGame == null)
-            return;
+        if (cardGame == null)
+            throw new NotFoundException("No card game with id : " + cardId + " was found !");
+
         List<Set> sets = setRepository.getSetByCardIdentifier_CardId(cardId);
-        if(sets == null)
-            return;
-        setRepository.deleteAll(sets);
+        if (sets != null)
+            setRepository.deleteAll(sets);
 
         /*List<Tournament> tournaments = tournamentRepository.getTournamentsByCardGame_CardId(cardGame.getCardIdentifier().getCardId());
         if(tournaments == null)
@@ -90,29 +137,45 @@ public class CardGameServiceImpl implements CardGameService{
     public CardGameResponseModel addCardGame(CardGameRequestModel cardGameRequestModel) {
         CardGame cardGame = cardGameRequestMapper.requestModelToEntity(cardGameRequestModel);
 
-        return cardGameResponseMapper.entityToResponseModel(cardGameRepository.save(cardGame));
+        try {
+            return cardGameResponseMapper.entityToResponseModel(cardGameRepository.save(cardGame));
+        } catch (
+                DataAccessException ex) {
+            if (ex.getMessage().contains("constraint [card_game_name]")) {
+                throw new DuplicateCardGameNameException("Name provided is a duplicate : " + cardGameRequestModel.getCardGameName());
+            } else throw new InvalidInputException(("An unknown error as occurred"));
+        }
     }
 
     @Override
     public void deleteCardGameSet(String setId) {
-        Set set = setRepository.getSetById(setId);
-        if(set == null)
-            return;
+        Set set = setRepository.getSetBySetIdentifier_SetId(setId);
+        if (set == null)
+            throw new NotFoundException("No set with id : " + setId + "was found !");
+
         setRepository.delete(set);
     }
 
     @Override
     public SetResponseModel updateCardGameSet(String setId, SetRequestModel setRequestModel) {
-        Set existingSet =setRepository.getSetById(setId);
+        Set existingSet = setRepository.getSetBySetIdentifier_SetId(setId);
 
-        if(existingSet == null){
-            return null;
+        if (existingSet == null) {
+            throw new NotFoundException("No set with id : " + setId + " was found !");
         }
 
+        if (setRequestModel.getNumberOfCards() < 0)
+            throw new InvalidInputException("Number of cards can't be negative : " + setRequestModel.getNumberOfCards());
+
         Set set = setRequestMapper.entityToResponseModel(setRequestModel, new CardIdentifier(setRequestModel.getCardId()));
+
+        CardGame cardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(set.getCardIdentifier().getCardId());
+        if (cardGame.getReleaseDate().compareTo(set.getReleaseDate()) > 0)
+            throw new InvalidInputException("A set can't be release be for the game : \nGame was released : " + cardGame.getReleaseDate() + " \nSimpleDateFormat entered for set : " + set.getReleaseDate());
 
         set.setId(existingSet.getId());
         set.setCardIdentifier(existingSet.getCardIdentifier());
 
-        return setResponseMapper.entityToResponseModel(setRepository.save(set));    }
+        return setResponseMapper.entityToResponseModel(setRepository.save(set));
+    }
 }

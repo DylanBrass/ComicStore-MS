@@ -7,7 +7,7 @@ import com.comicstore.storeservice.presentationlayer.Inventory.InventoryResponse
 import java.util.List;
 
 public interface InventoryService {
-     InventoryResponseModel createInventory(InventoryRequestModel inventoryRequestModel);
+     InventoryResponseModel createInventory(String storeId,InventoryRequestModel inventoryRequestModel);
      InventoryResponseModel updateInventory(String inventoryId,InventoryRequestModel inventoryRequestModel);
      List<InventoryResponseModel> getInventories();
      InventoryResponseModel getInventoryById(String inventoryId);

@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,10 +31,10 @@ class InventoryPersistenceTest {
         inventoryRepository.deleteAll();
         presavedInventory1 = inventoryRepository.save(
                 new Inventory(new StoreIdentifier("1b5fb4a0-8761-47a6-bacb-ab3c99f8c480"),
-                        new SimpleDateFormat(),Type.IN_STORE, InventoryStatus.OPEN));
+                        LocalDate.now(),Type.IN_STORE, InventoryStatus.OPEN));
         presavedInventory2 = inventoryRepository.save(
                 new Inventory(new StoreIdentifier("1b5fb4a0-8761-47a6-bacb-ab3c99f8c480"),
-                        new SimpleDateFormat(),Type.OUTSIDE_STORE, InventoryStatus.CLOSED));
+                        LocalDate.now(),Type.OUTSIDE_STORE, InventoryStatus.CLOSED));
     }
 
     @Test
@@ -74,7 +75,7 @@ class InventoryPersistenceTest {
     @Test
     void postNewInventoryWithValidValues_ShouldReturnNewInventory(){
         String expectedStoreId = "c293820a-d989-48ff-8410-24062a69d99e";
-        SimpleDateFormat expectedDate = new SimpleDateFormat();
+        LocalDate expectedDate = LocalDate.now();
         Type expectedType = Type.IN_STORE;
         InventoryStatus expectedStatus = InventoryStatus.OPEN;
 

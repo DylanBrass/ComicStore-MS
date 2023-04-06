@@ -1,21 +1,23 @@
 package com.comicstore.storeservice.presentationlayer.Inventory;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
-import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
-@Value
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class InventoryResponseModel {
+
+@EqualsAndHashCode(callSuper=false)
+@Data
+@AllArgsConstructor
+public class InventoryResponseModel extends RepresentationModel<InventoryResponseModel> {
     private String inventoryId;
 
     private String storeId;
 
-    private Date lastUpdated;
+    private LocalDate lastUpdated;
 
     private String type;
+    private String status;
 }

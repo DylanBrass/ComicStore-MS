@@ -1,20 +1,24 @@
 package com.comicstore.cardgameservice.presentationlayer;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Value;
+import lombok.*;
+import org.springframework.hateoas.RepresentationModel;
 
-@Value
-@Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class SetResponseModel {
+import java.time.LocalDate;
+import java.util.Date;
+
+@EqualsAndHashCode(callSuper=false)
+@Data
+@AllArgsConstructor
+public class SetResponseModel extends RepresentationModel<SetResponseModel> {
     private Integer id;
+
+    private String setId;
+
     private String cardGame;
 
     private String name;
 
-    private String releaseDate;
+    private LocalDate releaseDate;
 
     private int numberOfCards;
 
