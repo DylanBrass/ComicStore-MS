@@ -24,4 +24,15 @@ public class Set {
     private LocalDate releaseDate;
 
     private int numberOfCards;
+
+    public Set() {
+        this.setIdentifier = new SetIdentifier();
+    }
+
+    public Set(CardIdentifier cardIdentifier, String name, LocalDate releaseDate, int numberOfCards) {
+        this.cardIdentifier = cardIdentifier;
+        this.name = name;
+        this.releaseDate = releaseDate;
+        this.numberOfCards = numberOfCards;
+    }
 }
