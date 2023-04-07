@@ -1,13 +1,12 @@
 package com.comicstore.clientservice.businesslayer;
 
-import com.comicstore.clientservice.Utils.Exceptions.DuplicateFullNameException;
+import com.comicstore.clientservice.Utils.Exceptions.DuplicateClientInformationException;
 import com.comicstore.clientservice.Utils.Exceptions.NoEmailAndPhoneException;
 import com.comicstore.clientservice.Utils.Exceptions.NotFoundException;
 import com.comicstore.clientservice.datalayer.Client;
 import com.comicstore.clientservice.datalayer.ClientIdentifier;
 import com.comicstore.clientservice.datalayer.ClientRepository;
 import com.comicstore.clientservice.datalayer.StoreIdentifier;
-import com.comicstore.clientservice.datamapperlayer.ClientRequestMapper;
 import com.comicstore.clientservice.datamapperlayer.ClientResponseMapper;
 import com.comicstore.clientservice.presentationlayer.ClientRequestModel;
 import com.comicstore.clientservice.presentationlayer.ClientResponseModel;
@@ -65,12 +64,17 @@ public class ClientServiceImpl implements ClientService {
         }
 
         if( clientRepository.existsByLastName(clientRequestModel.getLastName()) && clientRepository.existsByFirstName(clientRequestModel.getFirstName())){
-            throw new DuplicateFullNameException("A client with the name : " + clientRequestModel.getFirstName() +" "+ clientRequestModel.getLastName() + " already exists !");
+            throw new DuplicateClientInformationException("A client with the name : " + clientRequestModel.getFirstName() +" "+ clientRequestModel.getLastName() + " already exists !");
         }
 
         Client client = new Client(clientRequestModel.getFirstName(),clientRequestModel.getLastName(),
-                clientRequestModel.getTotalBought(),
-                clientRequestModel.getEmail(),clientRequestModel.getPhoneNumber());
+                clientRequestModel.getTotalBought());
+        if(clientRequestModel.getEmail() !=null)
+            client.getContact().setEmail(clientRequestModel.getEmail());
+
+        if(clientRequestModel.getPhoneNumber() != null)
+            client.getContact().setPhoneNumber(clientRequestModel.getPhoneNumber());
+
         client.setClientIdentifier(new ClientIdentifier());
         //need to check if store exists
         client.setStoreIdentifier(new StoreIdentifier(storeId));
@@ -80,17 +84,25 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientResponseModel updateClient(ClientRequestModel clientRequestModel, String clientId) {
 
-        if(clientRepository.existsByFirstName(clientRequestModel.getFirstName()) && clientRepository.existsByLastName(clientRequestModel.getLastName())){
-            throw new DuplicateFullNameException("A client with the name : " + clientRequestModel.getFirstName() + clientRequestModel.getLastName() + " already exists !");
-        }
+
 
         Client existingClient = clientRepository.findClientByClientIdentifier_ClientId(clientId);
         if(existingClient == null){
             throw new NotFoundException("No client found with id : " + clientId);
         }
         Client client = new Client(clientRequestModel.getFirstName(),clientRequestModel.getLastName(),
-                clientRequestModel.getTotalBought(),
-                clientRequestModel.getEmail(),clientRequestModel.getPhoneNumber());
+                clientRequestModel.getTotalBought());
+
+        if(clientRequestModel.getEmail() !=null)
+            client.getContact().setEmail(clientRequestModel.getEmail());
+        else if (existingClient.getContact().getEmail() != null) {
+            client.getContact().setEmail(existingClient.getContact().getEmail());
+        }
+
+        if(clientRequestModel.getPhoneNumber() != null)
+            client.getContact().setPhoneNumber(clientRequestModel.getPhoneNumber());
+        else if(existingClient.getContact().getPhoneNumber() != null)
+            client.getContact().setPhoneNumber(existingClient.getContact().getPhoneNumber());
         client.setClientIdentifier(existingClient.getClientIdentifier());
         client.setId(existingClient.getId());
 //check if store exists

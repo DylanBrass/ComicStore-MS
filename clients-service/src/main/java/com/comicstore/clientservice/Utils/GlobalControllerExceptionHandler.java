@@ -1,6 +1,6 @@
 package com.comicstore.clientservice.Utils;
 
-import com.comicstore.clientservice.Utils.Exceptions.DuplicateFullNameException;
+import com.comicstore.clientservice.Utils.Exceptions.DuplicateClientInformationException;
 import com.comicstore.clientservice.Utils.Exceptions.InvalidInputException;
 import com.comicstore.clientservice.Utils.Exceptions.NoEmailAndPhoneException;
 import com.comicstore.clientservice.Utils.Exceptions.NotFoundException;
@@ -42,7 +42,7 @@ public class GlobalControllerExceptionHandler {
 
 
     @ResponseStatus(CONFLICT)
-    @ExceptionHandler(DuplicateFullNameException.class)
+    @ExceptionHandler(DuplicateClientInformationException.class)
     public HttpErrorInfo handleDuplicateFullNameException(WebRequest request, Exception ex) {
         return createHttpErrorInfo(CONFLICT, request, ex);
     }

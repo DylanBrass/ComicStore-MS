@@ -88,7 +88,7 @@ public class CardGameServiceImpl implements CardGameService {
 
         set.setCardIdentifier(cardGame.getCardIdentifier());
 
-        if (cardGame.getReleaseDate().compareTo(set.getReleaseDate()) > 0)
+        if (cardGame.getReleaseDate().isAfter(set.getReleaseDate()))
             throw new InvalidInputException("A set can't be release be for the game : \nGame was released : " + cardGame.getReleaseDate() + " \nSimpleDateFormat entered for set : " + set.getReleaseDate());
 
 
@@ -170,7 +170,7 @@ public class CardGameServiceImpl implements CardGameService {
         Set set = setRequestMapper.entityToResponseModel(setRequestModel, new CardIdentifier(setRequestModel.getCardId()));
 
         CardGame cardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(set.getCardIdentifier().getCardId());
-        if (cardGame.getReleaseDate().compareTo(set.getReleaseDate()) > 0)
+        if (cardGame.getReleaseDate().isAfter(set.getReleaseDate()))
             throw new InvalidInputException("A set can't be release be for the game : \nGame was released : " + cardGame.getReleaseDate() + " \nSimpleDateFormat entered for set : " + set.getReleaseDate());
 
         set.setId(existingSet.getId());

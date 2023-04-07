@@ -1,0 +1,253 @@
+@startuml
+!define ENTITY(entityName) class entityName << Entity >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+
+rectangle " " as BoundedContextStore #line.dashed {
+    rectangle "Store Subdomain"{
+        ENTITY(Store) {
+            -dateOpened : LocalDate
+            -Status : Enum
+        }
+
+
+
+        VALUE_OBJECT(StoreIdentifier) {
+            -storeId: UUID
+        }
+
+        VALUE_OBJECT(Address) {
+            -streetAddress: String
+            -city: String
+            -province: String
+            -postalCode: String
+        }
+        VALUE_OBJECT(ContactStore) {
+                    -email: String
+                    -phoneNumber: String
+                }
+
+
+     ENTITY(Inventory) {
+                    -lastUpdate: LocalDate
+                    -type: Enum
+                    -InventoryStatus: Enum
+                    -comics: List<ComicBookIdentifier>
+                    -boardGames: List<BoardGameIdentifier>
+                }
+
+       VALUE_OBJECT(InventoryIdentifier) {
+                            -inventoryId: UUID
+                        }
+        Store "1" o-- "1" Address
+        Store "1" o-- "1" ContactStore
+        Store --> StoreIdentifier
+
+        Inventory "1" o-- "1" InventoryIdentifier
+
+        StoreIdentifier "1" o-- "1*" Inventory
+        AGGREGATE_ROOT(Store)
+        note "Invariant: [Everytime a update or when the inventory is created the current date is the value for lastUpdated]" as inventoryInvariant1
+
+    }
+}
+rectangle " " as BoundedContextClient #line.dashed {
+    rectangle "Client subdomain"{
+   AGGREGATE_ROOT(Client) {
+            -firstName : String
+            -lastName : String
+            -rebate : int
+            -totalBought : double
+        }
+
+
+
+        VALUE_OBJECT(ClientIdentifier) {
+            -clientId: UUID
+        }
+
+        VALUE_OBJECT(ContactClient) {
+                    -email: String
+                    -phoneNumber: String
+                }
+        note "Invariant: [When a receipt is done with the Client Id the POS updates the client totalBought by adding the amount purchased]" as clientInvariant1
+
+
+        StoreIdentifier "1" o-- "1" Client
+        Client "1" o-- "1" ContactClient
+        Client "1" o-- "1" ClientIdentifier
+}
+    }
+
+
+    rectangle " " as BoundedContextTournament #line.dashed {
+        rectangle "Tournament subdomain"{
+       ENTITY(Tournament) {
+                -player : List<Client>
+                -entryCost : double
+                -winner : Client
+            }
+
+
+
+            VALUE_OBJECT(TournamentIdentifier) {
+                -tournamentId: UUID
+            }
+
+            VALUE_OBJECT(Results) {
+                        -clientId: String
+                        -Victories: int
+                        -Losses: int
+                        -Draws: int
+                    }
+
+
+        ClientIdentifier "1" o-- "1" "Tournament"
+        Tournament "1" o-- "1" Results
+        Tournament "1" o-- "1" TournamentIdentifier
+    }
+        }
+
+
+
+    rectangle " " as BoundedContextCardGame #line.dashed {
+        rectangle "Cardgame subdomain"{
+       AGGREGATE_ROOT(CardGame) {
+                -cardGameName : String
+                -company : String
+                -releaseDate : LocalDate
+                -isActive : Boolean
+            }
+
+        note "Invariant: [If the game stop being printed IsActive=False]" as cardGameInvariant1
+
+
+            VALUE_OBJECT(CardGameIdentifier) {
+                -cardGameId: UUID
+            }
+
+
+
+            ENTITY(Set) {
+                -name : String
+                -releaseDate : LocalDate
+                -numberOfCards : int
+            }
+            VALUE_OBJECT(SetIdentifier) {
+                                    -setId: UUID
+            }
+
+            CardGame "1" o-- "1" CardGameIdentifier
+            Set "1" o-- "1" CardGameIdentifier
+            Set "1" o-- "1" SetIdentifier
+            "Tournament" "1" o-- "1" CardGameIdentifier
+
+
+        }
+        }
+
+
+        rectangle " " as BoundedContextComicBook #line.dashed {
+                rectangle "ComicBook subdomain"{
+               AGGREGATE_ROOT(ComicBook) {
+                        -title : String
+                        -number : Int
+                        -genre : String
+                        -type : Enum
+                        -price : double
+                    }
+
+
+
+                    VALUE_OBJECT(ComicBookIdentifier) {
+                        -comicBookId: UUID
+                    }
+
+
+
+
+                    VALUE_OBJECT(CompanyComicBook) {
+                          -name: String
+                          -creationDate: LocalDate
+                          -headquaters: String
+                    }
+
+                    ComicBook "1" o-- "1" ComicBookIdentifier
+                    ComicBook "1" o-- "1" CompanyComicBook
+
+                    "ComicBookIdentifier" "1" o-- "1" Inventory
+
+
+                }
+                }
+
+
+ rectangle " " as BoundedContextBoardGame #line.dashed {
+                rectangle "BoardGame subdomain"{
+               AGGREGATE_ROOT(BoardGame) {
+                        -boardGameName : String
+                        -genre : String
+                        -releaseDate : LocalDate
+                        -maxNumOfPlayers : int
+                        -minNumOfPlayers : int
+                        -playTime : LocalTime
+                        -price : double
+                    }
+
+
+
+                    VALUE_OBJECT(BoardGameIdentifier) {
+                        -boardGameId: UUID
+                    }
+
+
+
+
+                    VALUE_OBJECT(CompanyBoardGame) {
+                          -name: String
+                          -creationDate: LocalDate
+                          -headquaters: String
+                    }
+
+                    BoardGame "1" o-- "1" BoardGameIdentifier
+                    BoardGame "1" o-- "1" CompanyBoardGame
+
+                    "BoardGameIdentifier" "1" o-- "1" Inventory
+
+
+                }
+                }
+
+
+ rectangle " " as BoundedContextReceipt #line.dashed {
+                rectangle "Receipt subdomain"{
+               AGGREGATE_ROOT(Receipt) {
+                        -boardGameName : String
+                        -genre : String
+                        -releaseDate : LocalDate
+                        -maxNumOfPlayers : int
+                        -minNumOfPlayers : int
+                        -playTime : LocalTime
+                        -price : double
+                    }
+
+
+
+                    VALUE_OBJECT(ReceiptIdentifier) {
+                        -receiptId: UUID
+                    }
+
+
+
+
+
+
+                    ClientIdentifier "1" o-- "1" Receipt
+                    StoreIdentifier "1" o-- "1" Receipt
+
+                    Receipt "1" o-- "1" ReceiptIdentifier
+
+
+                }
+                }
+@enduml

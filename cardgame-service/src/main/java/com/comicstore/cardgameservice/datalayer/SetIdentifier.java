@@ -10,8 +10,8 @@ public class SetIdentifier {
     public SetIdentifier() {
         this.setId = UUID.randomUUID().toString();
     }
-    public SetIdentifier(String cardId) {
-        this.setId = cardId;
+    public SetIdentifier(String setId) {
+        this.setId = setId;
     }
 
 
@@ -20,7 +20,7 @@ public class SetIdentifier {
         return this.setId;
     }
 
-    public void setSetId(String cardId) {
-        this.setId = cardId;
+    public void setSetId(String setId) {
+        this.setId = setId;
     }
 }

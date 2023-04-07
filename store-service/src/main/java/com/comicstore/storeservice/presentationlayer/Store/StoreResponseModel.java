@@ -18,10 +18,8 @@ public class StoreResponseModel extends RepresentationModel<StoreResponseModel> 
     private String city;
     private String province;
     private String postalCode;
-
     private String email;
     private String status;
-
     private String phoneNumber;
 
 }

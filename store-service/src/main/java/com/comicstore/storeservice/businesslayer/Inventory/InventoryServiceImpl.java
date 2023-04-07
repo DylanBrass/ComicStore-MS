@@ -4,6 +4,7 @@ import com.comicstore.storeservice.Utils.Exceptions.InvalidInputException;
 import com.comicstore.storeservice.Utils.Exceptions.NotFoundException;
 import com.comicstore.storeservice.datalayer.Inventory.Inventory;
 import com.comicstore.storeservice.datalayer.Inventory.InventoryRepository;
+import com.comicstore.storeservice.datalayer.Inventory.InventoryStatus;
 import com.comicstore.storeservice.datalayer.Inventory.Type;
 import com.comicstore.storeservice.datalayer.Store.Status;
 import com.comicstore.storeservice.datalayer.Store.StoreIdentifier;
@@ -48,13 +49,12 @@ public class InventoryServiceImpl implements InventoryService{
         }
 
 
-        Inventory inventory = inventoryRequestMapper.requestModelToEntity(inventoryRequestModel, new StoreIdentifier(inventoryRequestModel.getStoreId()));
-        inventory.setStoreIdentifier(new StoreIdentifier(storeId));
+        Inventory inventory = inventoryRequestMapper.requestModelToEntity(inventoryRequestModel, new StoreIdentifier(storeId));
         inventory.setLastUpdated(LocalDate.now());
 
 
-        if(!storeRepository.existsByStoreIdentifier_StoreId(inventoryRequestModel.getStoreId()))
-            throw new NotFoundException("No Store with id : " + inventoryRequestModel.getStoreId() + " was found !");
+        if(!storeRepository.existsByStoreIdentifier_StoreId(storeId))
+            throw new NotFoundException("No Store with id : " + storeId + " was found !");
 
 
         return inventoryResponseMapper.entityToResponseModel(inventoryRepository.save(inventory));
@@ -81,13 +81,19 @@ public class InventoryServiceImpl implements InventoryService{
             inventory.setStoreIdentifier(existingInventory.getStoreIdentifier());
         }
         else {
-            inventory.setStoreIdentifier(new StoreIdentifier(inventoryRequestModel.getStoreId()));
+            if(storeRepository.existsByStoreIdentifier_StoreId(inventoryRequestModel.getStoreId()))
+                inventory.setStoreIdentifier(new StoreIdentifier(inventoryRequestModel.getStoreId()));
+            else
+                throw new NotFoundException("No Store with id : " + inventoryRequestModel.getStoreId() + " was found !");
+
         }
+
         inventory.setLastUpdated(LocalDate.now());
 
 
 
         inventory.setId(existingInventory.getId());
+        inventory.setInventoryIdentifier(existingInventory.getInventoryIdentifier());
         return inventoryResponseMapper.entityToResponseModel(inventoryRepository.save(inventory));
     }
 
@@ -105,6 +111,13 @@ public class InventoryServiceImpl implements InventoryService{
         return inventoryResponseMapper.entityToResponseModel(inventoryRepository.getInventoryByInventoryIdentifier_InventoryId(inventoryId));
     }
 
+    @Override
+    public void deleteInventory(String inventoryId) {
+        Inventory inventory = inventoryRepository.getInventoryByInventoryIdentifier_InventoryId(inventoryId);
+        inventory.setStatus(InventoryStatus.CLOSED);
+        inventoryRepository.save(inventory);
+
+    }
 
 
     public static Boolean findByType(String typeStr) {

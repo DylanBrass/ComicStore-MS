@@ -30,7 +30,7 @@ public class Client {
         this.clientIdentifier = new ClientIdentifier();
     }
 
-    public Client(String firstName, String lastName, double totalBought, String email, String phoneNumber) {
+    public Client(String firstName, String lastName, double totalBought) {
         this.clientIdentifier = new ClientIdentifier();
         this.firstName = firstName;
         this.lastName = lastName;
@@ -43,11 +43,10 @@ public class Client {
         else if(totalBought>1000){
             this.rebate = 10;
         }
-        else{
+        else {
             this.rebate = 0;
         }
-
-        this.contact = new Contact(email,phoneNumber);
+        this.contact = new Contact();
     }
 
     public void setRebate() {

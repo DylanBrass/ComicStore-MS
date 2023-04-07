@@ -30,6 +30,7 @@ public class Set {
     }
 
     public Set(CardIdentifier cardIdentifier, String name, LocalDate releaseDate, int numberOfCards) {
+        this.setIdentifier = new SetIdentifier();
         this.cardIdentifier = cardIdentifier;
         this.name = name;
         this.releaseDate = releaseDate;

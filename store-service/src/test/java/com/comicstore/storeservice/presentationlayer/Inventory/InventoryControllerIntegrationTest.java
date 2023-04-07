@@ -2,7 +2,9 @@ package com.comicstore.storeservice.presentationlayer.Inventory;
 
 import com.comicstore.storeservice.datalayer.Inventory.Inventory;
 import com.comicstore.storeservice.datalayer.Inventory.InventoryRepository;
+import com.comicstore.storeservice.datalayer.Inventory.InventoryStatus;
 import com.comicstore.storeservice.datalayer.Store.Status;
+import com.comicstore.storeservice.datalayer.Store.Store;
 import com.comicstore.storeservice.datalayer.Store.StoreRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,7 @@ class InventoryControllerIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(inventoryRequestModel)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(InventoryResponseModel.class)
                 .value(val -> {
@@ -138,7 +140,7 @@ class InventoryControllerIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(inventoryRequestModel)
                 .exchange()
-                .expectStatus().isCreated()
+                .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(InventoryResponseModel.class)
                 .value(val -> {
@@ -189,6 +191,22 @@ class InventoryControllerIntegrationTest {
                 .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_INVENTORY + "/" + invalidInventoryId )
                 .jsonPath("$.message")
                 .isEqualTo("No Inventory with id : " + invalidInventoryId + " was found !");
+    }
+
+    @Test
+    public void WhenDeleteExistingInventory_thenSoftDeleteInventory() {
+
+        InventoryStatus expectedStatus = InventoryStatus.CLOSED;
+
+        webTestClient.delete().uri(BASE_URI_INVENTORY + "/" + VALID_INVENTORY_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isNoContent();
+
+        Inventory deletedInventory = inventoryRepository.getInventoryByInventoryIdentifier_InventoryId(VALID_INVENTORY_ID);
+        assertNotNull(deletedInventory);
+
+        assertEquals(expectedStatus, deletedInventory.getStatus());
+
     }
 
 

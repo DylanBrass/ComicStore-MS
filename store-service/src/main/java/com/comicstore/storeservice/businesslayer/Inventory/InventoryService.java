@@ -11,4 +11,8 @@ public interface InventoryService {
      InventoryResponseModel updateInventory(String inventoryId,InventoryRequestModel inventoryRequestModel);
      List<InventoryResponseModel> getInventories();
      InventoryResponseModel getInventoryById(String inventoryId);
+
+     void deleteInventory(String inventoryId);
+
+
 }

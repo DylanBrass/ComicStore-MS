@@ -13,6 +13,7 @@ Client findClientByClientIdentifier_ClientId(String ClientId);
 Boolean existsByLastName(String lastname);
 
 Boolean existsByFirstName(String firstName);
+Boolean existsByContact_Email(String email);
 
 List<Client> findClientByStoreIdentifier_StoreId(String storeId);
 

@@ -10,8 +10,6 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class SetResponseModel extends RepresentationModel<SetResponseModel> {
-    private Integer id;
-
     private String setId;
 
     private String cardGame;

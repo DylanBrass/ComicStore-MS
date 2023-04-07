@@ -35,8 +35,8 @@ public class CardGameController {
 
     @PostMapping("/{cardGameId}/sets")
     public ResponseEntity<SetResponseModel> addSetToCardGame(@PathVariable String cardGameId,@Valid @RequestBody SetRequestModel setRequestModel){
-        if (Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate().toString()).matches())
-            throw new InvalidInputException("Release SimpleDateFormat entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
+        if (!Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate()).matches())
+            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cardGameService.addCardGameSet(cardGameId,setRequestModel));
     }
@@ -61,8 +61,8 @@ public class CardGameController {
 
     @PostMapping()
     public ResponseEntity<CardGameResponseModel> addCardGame(@Valid @RequestBody CardGameRequestModel cardGameRequestModel){
-        if (Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
-            throw new InvalidInputException("Release SimpleDateFormat entered is not in format YYYY-MM-DD : " + cardGameRequestModel.getReleaseDate());
+        if (!Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
+            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + cardGameRequestModel.getReleaseDate());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cardGameService.addCardGame(cardGameRequestModel));
     }
@@ -76,8 +76,8 @@ public class CardGameController {
 
     @PutMapping("/sets/{setId}")
     ResponseEntity<SetResponseModel> updateSet(@Valid @RequestBody SetRequestModel setRequestModel,@PathVariable String setId){
-        if (Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate().toString()).matches())
-            throw new InvalidInputException("Release SimpleDateFormat entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
+        if (!Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate()).matches())
+            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(cardGameService.updateCardGameSet(setId,setRequestModel));
     }
@@ -85,8 +85,8 @@ public class CardGameController {
 
     @PutMapping("/{cardId}")
     ResponseEntity<CardGameResponseModel> updateCardGame(@PathVariable String cardId, @Valid @RequestBody CardGameRequestModel cardGameRequestModel){
-        if (Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
-            throw new InvalidInputException("Release SimpleDateFormat entered is not in format YYYY-MM-DD : " + cardGameRequestModel.getReleaseDate());
+        if (!Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
+            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + cardGameRequestModel.getReleaseDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(cardGameService.updateCardGame(cardId,cardGameRequestModel));
     }
