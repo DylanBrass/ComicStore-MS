@@ -23,12 +23,10 @@ import java.util.List;
 public class StoreServiceImpl implements StoreService {
     //Repositories
     StoreRepository storeRepository;
-    //ClientRepository clientRepository;
     InventoryRepository inventoryRepository;
 
 
     //Mappers
-    //ClientResponseMapper clientResponseMapper;
     StoreClientsResponseMapper storeClientsResponseMapper;
     StoreResponseMapper storeResponseMapper;
     InventoryResponseMapper inventoryResponseMapper;

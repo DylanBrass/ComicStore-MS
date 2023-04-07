@@ -59,11 +59,12 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientResponseModel createClient(String storeId, ClientRequestModel clientRequestModel) {
 
+
         if(clientRequestModel.getPhoneNumber() == null && clientRequestModel.getEmail() == null){
             throw new NoEmailAndPhoneException("You must enter an email or a phone number");
         }
 
-        if( clientRepository.existsByLastName(clientRequestModel.getLastName()) && clientRepository.existsByFirstName(clientRequestModel.getFirstName())){
+        if( clientRepository.existsByFirstNameAndLastName(clientRequestModel.getFirstName(),clientRequestModel.getLastName())){
             throw new DuplicateClientInformationException("A client with the name : " + clientRequestModel.getFirstName() +" "+ clientRequestModel.getLastName() + " already exists !");
         }
 
@@ -84,8 +85,15 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public ClientResponseModel updateClient(ClientRequestModel clientRequestModel, String clientId) {
 
+        //this finds the client with last name and first name, then compares the id, if they are the same that means
+        //that the one found is the one we are currently modifying
+        Client checkerClient = clientRepository.findClientByFirstNameAndLastName(clientRequestModel.getFirstName(),clientRequestModel.getLastName());
+        if(checkerClient != null && !clientId.equals(checkerClient.getStoreIdentifier().getStoreId())) {
+                throw new DuplicateClientInformationException("A client with the name : " + clientRequestModel.getFirstName() +" "+ clientRequestModel.getLastName() + " already exists !");
+        }
 
 
+        //continue if everything is good
         Client existingClient = clientRepository.findClientByClientIdentifier_ClientId(clientId);
         if(existingClient == null){
             throw new NotFoundException("No client found with id : " + clientId);
@@ -129,6 +137,7 @@ public class ClientServiceImpl implements ClientService {
         tournamentRepository.deleteAll();
 */
         clientRepository.delete(client);
+
     }
 
 
