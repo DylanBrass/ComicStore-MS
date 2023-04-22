@@ -46,19 +46,21 @@ public class CardGameController {
         return  ResponseEntity.status(HttpStatus.OK).body(cardGameService.getCardGameSets(cardGameId));
     }
 
-
+//
     @GetMapping("/sets")
-    public ResponseEntity<List<SetResponseModel>> getCardGameSets(){
+    public ResponseEntity<List<SetResponseModel>> getSets(){
 
         return ResponseEntity.status(HttpStatus.OK).body(cardGameService.getAllSets());
     }
 
+    //
     @DeleteMapping("/{cardGameId}")
     public ResponseEntity<Void> deleteCardGame(@PathVariable String cardGameId){
         cardGameService.deleteCardGame(cardGameId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    //
     @PostMapping()
     public ResponseEntity<CardGameResponseModel> addCardGame(@Valid @RequestBody CardGameRequestModel cardGameRequestModel){
         if (!Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
@@ -66,14 +68,14 @@ public class CardGameController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cardGameService.addCardGame(cardGameRequestModel));
     }
-
+//
     @DeleteMapping("/sets/{setId}")
     ResponseEntity<Void> deleteCardGameSet(@PathVariable String setId){
         cardGameService.deleteCardGameSet(setId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
+//
     @PutMapping("/sets/{setId}")
     ResponseEntity<SetResponseModel> updateSet(@Valid @RequestBody SetRequestModel setRequestModel,@PathVariable String setId){
         if (!Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate()).matches())

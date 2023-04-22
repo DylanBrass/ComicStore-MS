@@ -168,13 +168,17 @@ public class CardGameServiceImpl implements CardGameService {
             throw new InvalidInputException("Number of cards can't be negative : " + setRequestModel.getNumberOfCards());
 
         Set set = setRequestMapper.entityToResponseModel(setRequestModel, new CardIdentifier(setRequestModel.getCardId()));
+        if(setRequestModel.getCardId() == null)
+            set.setCardIdentifier(existingSet.getCardIdentifier());
+        else
+            set.setCardIdentifier(new CardIdentifier(setRequestModel.getCardId()));
 
         CardGame cardGame = cardGameRepository.getCardGameByCardIdentifier_CardId(set.getCardIdentifier().getCardId());
         if (cardGame.getReleaseDate().isAfter(set.getReleaseDate()))
             throw new InvalidInputException("A set can't be release be for the game : \nGame was released : " + cardGame.getReleaseDate() + " \nSimpleDateFormat entered for set : " + set.getReleaseDate());
 
         set.setId(existingSet.getId());
-        set.setCardIdentifier(existingSet.getCardIdentifier());
+        set.setSetIdentifier(existingSet.getSetIdentifier());
 
         return setResponseMapper.entityToResponseModel(setRepository.save(set));
     }

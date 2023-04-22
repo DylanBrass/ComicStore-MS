@@ -1,8 +1,13 @@
 package com.comicstore.cardgameservice.presentationlayer;
 
+import com.comicstore.cardgameservice.datalayer.CardGameRepository;
+import com.comicstore.cardgameservice.datalayer.CardIdentifier;
+import com.comicstore.cardgameservice.datalayer.SetIdentifier;
+import com.comicstore.cardgameservice.datalayer.SetRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
@@ -22,17 +27,33 @@ class CardGameControllerIntegrationTest {
     private final String VALID_CARDGAME_ID = "6dfc9e76-1aa7-4786-8398-f4ae25737324";
     private final String VALID_CARDGAME_NAME = "Magic The Gathering";
     private final String VALID_CARDGAME_COMPANY = "Wizards of the Coast";
-    private final String VALID_CARDGAME_RELEASEDATE = "2022-08-01";
+    private final String VALID_CARDGAME_RELEASEDATE = "2000-08-01";
     private final Boolean VALID_CARDGAME_ISACTIVE = true;
+
+
+
+    private final String VALID_SET_ID = "7a167ae1-38aa-4584-8c08-ef1ac1a32236";
+    private final String VALID_SET_CARDGAME_ID = "579a2484-43f4-413c-a97a-d0f1d9c980e4";
+    private final String VALID_SET_NAME = "Warriors Return";
+    private final String VALID_SET_RELEASEDATE = "2008-08-18";
+    private final int VALID_SET_NUMOFCARDS = 113;
+
+
+
 
 
 
     @Autowired
     WebTestClient webTestClient;
 
+    @Autowired
+    CardGameRepository cardGameRepository;
+
+    @Autowired
+    SetRepository setRepository;
     @Test
-    void getCardGames() {
-        Integer expectedNumCardGames = 4;
+    void WhenCardGamesExist_thenReturnAllCardGames() {
+        int expectedNumCardGames = 4;
         webTestClient.get()
                 .uri(BASE_URI_CARDGAMES)
                 .accept(MediaType.APPLICATION_JSON)
@@ -42,25 +63,165 @@ class CardGameControllerIntegrationTest {
     }
 
     @Test
-    void getCardGame() {
+    void WhenCardGameExists_thenReturnCardGame() {
 
 
-            webTestClient.get()
-                    .uri(BASE_URI_CARDGAMES + "/" + VALID_CARDGAME_ID)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .exchange().expectStatus().isOk()
-                    .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                    .expectBody(CardGameResponseModel.class)
-                    .value((dto)->{
-                        assertEquals(dto.getCardId(),VALID_CARDGAME_ID);
-                        assertEquals(dto.getCompany(),VALID_CARDGAME_COMPANY);
-                        assertEquals(dto.getCardGameName(),VALID_CARDGAME_NAME);
-                        assertEquals(dto.getIsActive(),VALID_CARDGAME_ISACTIVE);
-                        assertEquals(dto.getReleaseDate(),LocalDate.parse(VALID_CARDGAME_RELEASEDATE));
-                    });
-        }
+        webTestClient.get()
+                .uri(BASE_URI_CARDGAMES + "/" + VALID_CARDGAME_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(CardGameResponseModel.class)
+                .value((dto) -> {
+                    assertEquals(dto.getCardId(), VALID_CARDGAME_ID);
+                    assertEquals(dto.getCompany(), VALID_CARDGAME_COMPANY);
+                    assertEquals(dto.getCardGameName(), VALID_CARDGAME_NAME);
+                    assertEquals(dto.getIsActive(), VALID_CARDGAME_ISACTIVE);
+                    assertEquals(dto.getReleaseDate(), LocalDate.parse(VALID_CARDGAME_RELEASEDATE));
+                });
+    }
+
+
+    @Test
+    void WhenCreateCardGameWithValidValues_ReturnCardGame() {
+        String expectedName = "Magic the Gathering";
+        String expectedCompany = "Wizard";
+        String expectedRelease = "2020-02-02";
+        Boolean expectedActive = false;
+
+        CardGameRequestModel cardGameRequestModel = createNewCardGameRequestModel(expectedName,expectedCompany,expectedRelease,expectedActive);
+        webTestClient.post().uri(BASE_URI_CARDGAMES)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(cardGameRequestModel)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(CardGameResponseModel.class)
+                .value(val -> {
+                    assertNotNull(val.getCardId());
+                    assertEquals(val.getCardGameName(), expectedName);
+                    assertEquals(val.getCompany(), expectedCompany);
+                    assertEquals(val.getReleaseDate(), LocalDate.parse(expectedRelease));
+                    assertEquals(val.getIsActive(),expectedActive);
+                });
+
+    }
+
+
+    @Test
+    void WhenCardGameExists_ReturnSets(){
+        int expectedNumSets =  1;
+
+        webTestClient.get()
+                .uri(BASE_URI_CARDGAMES + "/" + VALID_CARDGAME_ID + "/sets")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath("$.length()").isEqualTo(expectedNumSets);
+
+    }
+    @Test
+    void WhenSetsExists_ReturnSets(){
+        int expectedNumSets =  3;
+
+        webTestClient.get()
+                .uri(BASE_URI_CARDGAMES + "/sets")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath("$.length()").isEqualTo(expectedNumSets);
+
+    }
+
+    @Test
+    void deleteCardGameWithValidId_ReturnNoContent(){
+        webTestClient.delete().uri(BASE_URI_CARDGAMES + "/" + VALID_CARDGAME_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isNoContent();
+
+        assertNull(cardGameRepository.getCardGameByCardIdentifier_CardId(VALID_CARDGAME_ID));
+
+    }
 
 
 
 
+    @Test
+    void deleteSetWithValidId_ReturnNoContent(){
+        webTestClient.delete().uri(BASE_URI_CARDGAMES + "/sets/" + VALID_SET_ID)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isNoContent();
+
+        assertNull(setRepository.getSetBySetIdentifier_SetId(VALID_SET_ID));
+
+    }
+
+    @Test
+    public void WhenUpdateSetWithValidValues_thenReturnUpdatedSet() {
+        //arrange
+        String expectedName = "testName";
+
+        SetRequestModel setRequestModel = createNewSetRequestModel(expectedName,VALID_SET_RELEASEDATE,VALID_SET_NUMOFCARDS);
+
+        //act and assert
+        webTestClient.put().uri(BASE_URI_CARDGAMES + "/sets/" + VALID_SET_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody()
+                .jsonPath("$.setId").isEqualTo(VALID_SET_ID)
+                .jsonPath("$.name").isEqualTo(expectedName);
+    }
+
+    @Test
+    public void WhenUpdateCardGameWithValidValues_thenReturnUpdatedCardGame() {
+        //arrange
+        String expectedName = "testName";
+
+        CardGameRequestModel cardGameRequestModel = createNewCardGameRequestModel(expectedName,VALID_CARDGAME_COMPANY,VALID_CARDGAME_RELEASEDATE,VALID_CARDGAME_ISACTIVE);
+
+        //act and assert
+        webTestClient.put().uri(BASE_URI_CARDGAMES + "/" + VALID_CARDGAME_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(cardGameRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody()
+                .jsonPath("$.cardId").isEqualTo(VALID_CARDGAME_ID)
+                .jsonPath("$.cardGameName").isEqualTo(expectedName);
+    }
+
+
+    @Test
+    public void WhenCreateSetWithValidValues_thenReturnNewSet() {
+        //arrange
+        String expectedDate = "2002-02-02";
+        String expectedName = "M20";
+        int expectedNumOfCards = 190;
+        SetRequestModel setRequestModel = createNewSetRequestModel(expectedName,expectedDate,expectedNumOfCards);
+
+        //act and assert
+        webTestClient.post().uri(BASE_URI_CARDGAMES + "/"+VALID_CARDGAME_ID+"/sets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON).expectBody(SetResponseModel.class)
+                .value(dto ->{
+                    assertNotNull(dto.getSetId());
+                    assertEquals(dto.getCardGame(),VALID_CARDGAME_ID);
+                    assertEquals(dto.getName(),expectedName);
+                    assertEquals(dto.getReleaseDate(),LocalDate.parse(expectedDate));
+                    assertEquals(dto.getNumberOfCards(),expectedNumOfCards);
+        });
+    }
+
+
+    private CardGameRequestModel createNewCardGameRequestModel(String name, String company, String date, Boolean active){
+        return CardGameRequestModel.builder()
+                .cardGameName(name).company(company).releaseDate(date).isActive(active).build();
+    }
+    private SetRequestModel createNewSetRequestModel(String name, String release, int numOfCards){
+        return SetRequestModel.builder()
+                .name(name).releaseDate(release).numberOfCards(numOfCards).build();
+    }
 }

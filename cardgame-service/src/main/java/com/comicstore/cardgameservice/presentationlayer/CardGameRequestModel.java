@@ -19,7 +19,7 @@ public class CardGameRequestModel {
     @NotBlank
     private String company;
 
-    private LocalDate releaseDate;
+    private String releaseDate;
 
     private Boolean isActive;
 }

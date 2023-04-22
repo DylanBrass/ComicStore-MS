@@ -45,7 +45,7 @@ public interface CardGameResponseMapper {
         model.add(cardgamesLink);
 
         Link setsLink = linkTo(methodOn(CardGameController.class)
-                .getCardGameSets())
+                .getSets())
                 .withRel("Sets");
 
         model.add(setsLink);

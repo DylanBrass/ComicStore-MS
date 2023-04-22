@@ -32,7 +32,7 @@ public interface SetResponseMapper {
         model.add(selfLink);
 
         Link setsLink = linkTo(methodOn(CardGameController.class)
-                .getCardGameSets())
+                .getSets())
                 .withRel("Sets");
 
         model.add(setsLink);

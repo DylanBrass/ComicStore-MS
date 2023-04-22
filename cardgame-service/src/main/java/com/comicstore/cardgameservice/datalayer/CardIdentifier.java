@@ -21,7 +21,4 @@ public class CardIdentifier {
         return this.cardId;
     }
 
-    public void setCardId(String cardId) {
-        this.cardId = cardId;
-    }
 }

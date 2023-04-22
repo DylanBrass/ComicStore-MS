@@ -1,4 +1,6 @@
 @startuml
+hide circle
+
 !define ENTITY(entityName) class entityName << Entity >>
 !define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
 !define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
@@ -32,8 +34,7 @@ rectangle " " as BoundedContextStore #line.dashed {
                     -lastUpdate: LocalDate
                     -type: Enum
                     -InventoryStatus: Enum
-                    -comics: List<ComicBookIdentifier>
-                    -boardGames: List<BoardGameIdentifier>
+
                 }
 
        VALUE_OBJECT(InventoryIdentifier) {
@@ -175,7 +176,7 @@ rectangle " " as BoundedContextClient #line.dashed {
                     ComicBook "1" o-- "1" ComicBookIdentifier
                     ComicBook "1" o-- "1" CompanyComicBook
 
-                    "ComicBookIdentifier" "1" o-- "1" Inventory
+                    "ComicBook" "1" o-- "1" Inventory
 
 
                 }
@@ -212,42 +213,12 @@ rectangle " " as BoundedContextClient #line.dashed {
                     BoardGame "1" o-- "1" BoardGameIdentifier
                     BoardGame "1" o-- "1" CompanyBoardGame
 
-                    "BoardGameIdentifier" "1" o-- "1" Inventory
+                    "BoardGame" "1" o-- "1" Inventory
 
 
                 }
                 }
 
 
- rectangle " " as BoundedContextReceipt #line.dashed {
-                rectangle "Receipt subdomain"{
-               AGGREGATE_ROOT(Receipt) {
-                        -boardGameName : String
-                        -genre : String
-                        -releaseDate : LocalDate
-                        -maxNumOfPlayers : int
-                        -minNumOfPlayers : int
-                        -playTime : LocalTime
-                        -price : double
-                    }
 
-
-
-                    VALUE_OBJECT(ReceiptIdentifier) {
-                        -receiptId: UUID
-                    }
-
-
-
-
-
-
-                    ClientIdentifier "1" o-- "1" Receipt
-                    StoreIdentifier "1" o-- "1" Receipt
-
-                    Receipt "1" o-- "1" ReceiptIdentifier
-
-
-                }
-                }
 @enduml
