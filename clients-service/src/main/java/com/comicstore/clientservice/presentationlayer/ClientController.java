@@ -33,12 +33,12 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getClients());
     }
 
-    @GetMapping("clients/{clientId}")
+    @GetMapping("/clients/{clientId}")
     public ResponseEntity<ClientResponseModel> getClientById(@PathVariable String clientId) {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.getClientById(clientId));
     }
 
-    @PutMapping("clients/{clientId}")
+    @PutMapping("/clients/{clientId}")
     public ResponseEntity<ClientResponseModel> updateClient(@PathVariable String clientId,@Valid @RequestBody ClientRequestModel clientRequestModel) {
         ClientExceptions(clientRequestModel);
 
@@ -46,12 +46,12 @@ public class ClientController {
         return ResponseEntity.status(HttpStatus.OK).body(clientService.updateClient(clientRequestModel, clientId));
     }
 
-    @PostMapping("{storeId}/clients")
-    public ResponseEntity<ClientResponseModel> createClient(@Valid @PathVariable String storeId,@Valid @RequestBody ClientRequestModel clientRequestModel) {
+    @PostMapping("/clients")
+    public ResponseEntity<ClientResponseModel> createClient(@Valid @RequestBody ClientRequestModel clientRequestModel) {
         ClientExceptions(clientRequestModel);
 
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(storeId,clientRequestModel));
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(clientRequestModel));
     }
 
     private void ClientExceptions(@RequestBody @Valid ClientRequestModel clientRequestModel) {
@@ -67,7 +67,7 @@ public class ClientController {
             throw new InvalidInputException("Phone number is in an invalid format ! : " + clientRequestModel.getPhoneNumber());
     }
 
-    @DeleteMapping("clients/{clientId}")
+    @DeleteMapping("/clients/{clientId}")
     public ResponseEntity<Void> deleteClient(@PathVariable String clientId) {
         clientService.deleteClient(clientId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

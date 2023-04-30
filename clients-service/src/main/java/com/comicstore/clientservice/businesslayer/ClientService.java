@@ -14,7 +14,7 @@ public interface ClientService {
 
         ClientResponseModel getClientById(String clientId);
 
-    ClientResponseModel createClient(String storeId,ClientRequestModel clientRequestModel);
+    ClientResponseModel createClient(ClientRequestModel clientRequestModel);
 
     ClientResponseModel updateClient(ClientRequestModel clientRequestModel, String clientId);
 

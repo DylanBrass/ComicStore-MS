@@ -55,14 +55,7 @@ public class CardGameServiceImpl implements CardGameService {
         CardGame cardGame = cardGameRequestMapper.requestModelToEntity(cardGameRequestModel);
         cardGame.setCardIdentifier(existingCardGame.getCardIdentifier());
         cardGame.setId(existingCardGame.getId());
-        try {
             return cardGameResponseMapper.entityToResponseModel(cardGameRepository.save(cardGame));
-        } catch (
-                DataAccessException ex) {
-            if (ex.getMessage().contains("constraint [card_game_name]")) {
-                throw new DuplicateCardGameNameException("Name provided is a duplicate : " + cardGameRequestModel.getCardGameName());
-            } else throw new InvalidInputException(("An unknown error as occurred"));
-        }
     }
 
     @Override
@@ -141,7 +134,7 @@ public class CardGameServiceImpl implements CardGameService {
             return cardGameResponseMapper.entityToResponseModel(cardGameRepository.save(cardGame));
         } catch (
                 DataAccessException ex) {
-            if (ex.getMessage().contains("constraint [card_game_name]")) {
+            if (ex.getMessage().contains("constraint [card_game_name]") || ex.getCause().toString().contains("ConstraintViolationException")) {
                 throw new DuplicateCardGameNameException("Name provided is a duplicate : " + cardGameRequestModel.getCardGameName());
             } else throw new InvalidInputException(("An unknown error as occurred"));
         }

@@ -489,6 +489,7 @@ class StoreControllerIntegrationTest {
 
         StoreRequestModel storeRequestModel = createNewStoreRequestModel(date, expectedStreetAddress, expectedCity, expectedProvince, expectedPostalCode, expectedEmail, expectedStatus, expectedPhone);
 
+
         //act and assert
         webTestClient.post().uri(BASE_URI_STORE)
                 .contentType(MediaType.APPLICATION_JSON)

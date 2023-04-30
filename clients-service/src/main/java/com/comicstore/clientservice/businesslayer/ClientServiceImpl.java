@@ -57,7 +57,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public ClientResponseModel createClient(String storeId, ClientRequestModel clientRequestModel) {
+    public ClientResponseModel createClient(ClientRequestModel clientRequestModel) {
 
 
         if(clientRequestModel.getPhoneNumber() == null && clientRequestModel.getEmail() == null){
@@ -78,7 +78,7 @@ public class ClientServiceImpl implements ClientService {
 
         client.setClientIdentifier(new ClientIdentifier());
         //need to check if store exists
-        client.setStoreIdentifier(new StoreIdentifier(storeId));
+        client.setStoreIdentifier(new StoreIdentifier(clientRequestModel.getStoreIdentifier()));
         return clientResponseMapper.entityToResponseModel(clientRepository.save(client));
     }
 

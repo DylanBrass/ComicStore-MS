@@ -1,10 +1,6 @@
-
 include 'api-gateway'
-include 'BoardGames-service'
 include 'clients-service'
-include 'ComicBook-service'
-include 'Receipt-service'
 include 'Store-service'
 include 'Tournament-service'
+include 'cardgame-service'
 include 'Inventory-service'
-include 'CardGame-service'
