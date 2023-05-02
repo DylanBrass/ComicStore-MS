@@ -37,10 +37,10 @@ public class Client {
         this.totalBought = totalBought;
         if(totalBought > 2000){
             this.rebate = 20;
-        }else if(totalBought >1500){
+        }else if(totalBought > 1500){
             this.rebate = 15;
         }
-        else if(totalBought>1000){
+        else if(totalBought > 1000){
             this.rebate = 10;
         }
         else {
@@ -49,17 +49,5 @@ public class Client {
         this.contact = new Contact();
     }
 
-    public void setRebate() {
-        if(this.totalBought > 2000){
-            this.rebate = 20;
-        }else if(this.totalBought >1500){
-            this.rebate = 15;
-        }
-        else if(this.totalBought>1000){
-            this.rebate = 10;
-        }
-        else{
-            this.rebate = 0;
-        }
-    }
+
 }

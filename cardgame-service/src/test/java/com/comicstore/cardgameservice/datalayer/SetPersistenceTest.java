@@ -56,7 +56,7 @@ class SetPersistenceTest {
     @Test
     void createSetWithValidValues_ShouldSucceed(){
         LocalDate expectedDate = LocalDate.now();
-        String expectedName = "M20";
+        String expectedName = "M22";
         int expectedNumOfCards = 190;
 
         Set newSet = setRepository.save(new Set(new CardIdentifier(VALID_CARDGAME_ID),expectedName,expectedDate,expectedNumOfCards));

@@ -89,7 +89,7 @@ public class CardGameServiceImpl implements CardGameService {
             return setResponseMapper.entityToResponseModel(setRepository.save(set));
         } catch (
                 DataAccessException ex) {
-            if (ex.getMessage().contains("constraint [name]")) {
+            if (ex.getMessage().contains("constraint [name]") || ex.getCause().toString().contains("ConstraintViolationException" )) {
                 throw new DuplicateSetNameException("Name provided is a duplicate : " + setRequestModel.getName());
             } else throw new InvalidInputException(("An unknown error as occurred"));
         }
@@ -144,7 +144,7 @@ public class CardGameServiceImpl implements CardGameService {
     public void deleteCardGameSet(String setId) {
         Set set = setRepository.getSetBySetIdentifier_SetId(setId);
         if (set == null)
-            throw new NotFoundException("No set with id : " + setId + "was found !");
+            throw new NotFoundException("No set with id : " + setId + " was found !");
 
         setRepository.delete(set);
     }

@@ -133,7 +133,7 @@ class CardGameControllerIntegrationTest {
 
     @Test
     void WhenCreateCardGameWithInvalidName_ReturnCardGame() {
-        String expectedName = "Yu-Gi-Ho!";
+        String expectedName = "Pokemon TCG";
         String expectedCompany = "Wizard";
         String expectedRelease = "2020-02-02";
         Boolean expectedActive = false;
@@ -199,6 +199,18 @@ class CardGameControllerIntegrationTest {
     }
 
     @Test
+    void deleteSetWithInvalidId_ThenThrowNotFoundException(){
+        webTestClient.delete().uri(BASE_URI_CARDGAMES + "/sets/" + 1)
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange().expectStatus().isEqualTo(HttpStatus.NOT_FOUND)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_CARDGAMES + "/sets/1")
+                .jsonPath("$.message")
+                .isEqualTo("No set with id : " + 1 + " was found !");;
+
+
+    }
+    @Test
     public void WhenUpdateSetWithValidValues_thenReturnUpdatedSet() {
         //arrange
         String expectedName = "testName";
@@ -216,8 +228,47 @@ class CardGameControllerIntegrationTest {
     }
 
 
+
     @Test
-    public void WhenUpdateSetWithInvalidDate_thenReturnUpdatedSet() {
+    public void WhenUpdateSetWithInvalidNumOfCards_thenThrowInvalidInputException() {
+        //arrange
+        int invalidNumOfCard = -100;
+
+        SetRequestModel setRequestModel = createNewSetRequestModel(VALID_SET_NAME,VALID_SET_RELEASEDATE,invalidNumOfCard);
+
+        //act and assert
+        webTestClient.put().uri(BASE_URI_CARDGAMES + "/sets/" + VALID_SET_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_CARDGAMES + "/sets/" + VALID_SET_ID)
+                .jsonPath("$.message")
+                .isEqualTo("Number of cards can't be negative : " + setRequestModel.getNumberOfCards());
+    }
+
+
+    @Test
+    public void WhenUpdateSetWithInvalidDateComparedToGame_thenThrowInvalidInputException() {
+        //arrange
+        String expectedDate = "1800-02-02";
+
+        SetRequestModel setRequestModel = createNewSetRequestModel(VALID_SET_NAME,expectedDate,VALID_SET_NUMOFCARDS);
+
+        //act and assert
+        webTestClient.put().uri(BASE_URI_CARDGAMES + "/sets/" + VALID_SET_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" +BASE_URI_CARDGAMES + "/sets/" + VALID_SET_ID)
+                .jsonPath("$.message")
+                .isEqualTo("A set can't be release be for the game : \n" +
+                        "Game was released : 2000-09-23 \n" +
+                        "SimpleDateFormat entered for set : 1800-02-02");
+    }
+    @Test
+    public void WhenUpdateSetWithInvalidDate_thenThrowInvalidInputException() {
         //arrange
         String expectedName = "testName";
         String invalidDate = "2020/2/0";
@@ -235,6 +286,28 @@ class CardGameControllerIntegrationTest {
                 .isEqualTo("Release date entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
 
     }
+
+
+    @Test
+    public void WhenUpdateSetWithInvalidCardGameId_thenThrowNotFoundException() {
+        //arrange
+        String expectedName = "testName";
+        String invalidDate = "2020-12-10";
+
+        SetRequestModel setRequestModel = createNewSetRequestModel(expectedName,invalidDate,VALID_SET_NUMOFCARDS);
+
+        //act and assert
+        webTestClient.put().uri(BASE_URI_CARDGAMES + "/sets/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.NOT_FOUND)
+                .expectBody()
+                .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_CARDGAMES + "/sets/1")
+                .jsonPath("$.message")
+                .isEqualTo("No set with id : " + 1 + " was found !");
+
+    }
+
 
     @Test
     public void WhenUpdateCardGameWithValidValues_thenReturnUpdatedCardGame() {
@@ -254,7 +327,7 @@ class CardGameControllerIntegrationTest {
     }
 
     @Test
-    public void WhenUpdateCardGameWithInvalidDate_thenReturnUpdatedCardGame() {
+    public void WhenUpdateCardGameWithInvalidDate_thenThrowInvalidInputException() {
         //arrange
         String expectedName = "testName";
         String invalidDate = "2020.22/2";
@@ -274,7 +347,7 @@ class CardGameControllerIntegrationTest {
 
 
     @Test
-    public void WhenUpdateCardGameWithInvalidUUID_thenReturnUpdatedCardGame() {
+    public void WhenUpdateCardGameWithInvalidUUID_thenThrowNotFoundException() {
         //arrange
         String expectedName = "testName";
         CardGameRequestModel cardGameRequestModel = createNewCardGameRequestModel(expectedName,VALID_CARDGAME_COMPANY,VALID_CARDGAME_RELEASEDATE,VALID_CARDGAME_ISACTIVE);
@@ -333,6 +406,47 @@ class CardGameControllerIntegrationTest {
                 .jsonPath("$.path").isEqualTo("uri=" + BASE_URI_CARDGAMES + "/"+VALID_CARDGAME_ID+"/sets")
                 .jsonPath("$.message")
                 .isEqualTo("Release date entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
+    }
+
+    @Test
+    public void WhenCreateSetWithInvalidName_thenThrowInvalidInputException() {
+        //arrange
+        String expectedDate = "2020-02-02";
+        String expectedName = "The Awakening";
+        int expectedNumOfCards = 190;
+        SetRequestModel setRequestModel = createNewSetRequestModel(expectedName,expectedDate,expectedNumOfCards);
+
+        //act and assert
+        webTestClient.post().uri(BASE_URI_CARDGAMES + "/"+VALID_CARDGAME_ID+"/sets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.CONFLICT)
+                .expectBody().jsonPath("$.path").isEqualTo("uri=" + BASE_URI_CARDGAMES + "/"+VALID_CARDGAME_ID+"/sets")
+                .jsonPath("$.message")
+                .isEqualTo("Name provided is a duplicate : " + setRequestModel.getName());
+
+
+    }
+
+
+    @Test
+    public void WhenCreateSetWithCardGameId_thenThrowNotFoundException() {
+        //arrange
+        String expectedDate = "2020-02-02";
+        String expectedName = "The Awakening";
+        int expectedNumOfCards = 190;
+        SetRequestModel setRequestModel = createNewSetRequestModel(expectedName,expectedDate,expectedNumOfCards);
+
+        //act and assert
+        webTestClient.post().uri(BASE_URI_CARDGAMES + "/1/sets")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(setRequestModel).accept(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.NOT_FOUND)
+                .expectBody().jsonPath("$.path").isEqualTo("uri=" + BASE_URI_CARDGAMES + "/1/sets")
+                .jsonPath("$.message")
+                .isEqualTo("No card game with id : 1 was found !");
+
+
     }
 
 

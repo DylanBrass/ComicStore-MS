@@ -19,6 +19,8 @@ public class Set {
     private SetIdentifier setIdentifier;
 
     private CardIdentifier cardIdentifier;
+
+    @Column(unique = true)
     private String name;
 
     private LocalDate releaseDate;

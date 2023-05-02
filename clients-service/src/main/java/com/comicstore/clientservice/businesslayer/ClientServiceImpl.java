@@ -88,7 +88,7 @@ public class ClientServiceImpl implements ClientService {
         //this finds the client with last name and first name, then compares the id, if they are the same that means
         //that the one found is the one we are currently modifying
         Client checkerClient = clientRepository.findClientByFirstNameAndLastName(clientRequestModel.getFirstName(),clientRequestModel.getLastName());
-        if(checkerClient != null && !clientId.equals(checkerClient.getStoreIdentifier().getStoreId())) {
+        if(checkerClient != null && !clientId.equals(checkerClient.getClientIdentifier().getClientId())) {
                 throw new DuplicateClientInformationException("A client with the name : " + clientRequestModel.getFirstName() +" "+ clientRequestModel.getLastName() + " already exists !");
         }
 

@@ -58,11 +58,11 @@ public class ClientController {
         if (clientRequestModel.getTotalBought() < 0)
             throw new InvalidInputException("A client can't have a negative total bought : " + clientRequestModel.getTotalBought());
 
-        if (!Pattern.compile(emailRegex).matcher(clientRequestModel.getEmail())
+        if (clientRequestModel.getEmail() != null && !Pattern.compile(emailRegex).matcher(clientRequestModel.getEmail())
                 .matches())
             throw new InvalidInputException("Email is in an invalid format ! : " + clientRequestModel.getEmail());
 
-        if (!Pattern.compile(phoneRegex).matcher(clientRequestModel.getPhoneNumber())
+        if (clientRequestModel.getPhoneNumber() != null && !Pattern.compile(phoneRegex).matcher(clientRequestModel.getPhoneNumber())
                 .matches())
             throw new InvalidInputException("Phone number is in an invalid format ! : " + clientRequestModel.getPhoneNumber());
     }

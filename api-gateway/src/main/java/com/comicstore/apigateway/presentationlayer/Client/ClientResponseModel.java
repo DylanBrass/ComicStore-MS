@@ -1,6 +1,9 @@
-package com.comicstore.clientservice.presentationlayer;
+package com.comicstore.apigateway.presentationlayer.Client;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 @Data

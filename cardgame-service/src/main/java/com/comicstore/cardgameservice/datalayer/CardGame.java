@@ -17,7 +17,7 @@ public class CardGame {
     @Embedded
     private CardIdentifier cardIdentifier;
 
-    @Column(name = "card_game_name")
+    @Column(name = "card_game_name", unique = true)
     private String cardGameName;
 
     private String company;

@@ -14,15 +14,9 @@ public class ClientIdentifier {
         this.clientId = UUID.randomUUID().toString();
     }
 
-    public ClientIdentifier(String clientId){
-        this.clientId = clientId;
-}
 
     public String getClientId() {
         return this.clientId;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
 }
