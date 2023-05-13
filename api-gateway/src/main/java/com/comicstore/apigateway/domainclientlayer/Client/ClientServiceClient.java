@@ -1,20 +1,23 @@
 package com.comicstore.apigateway.domainclientlayer.Client;
 
+import com.comicstore.apigateway.presentationlayer.Client.ClientRequestModel;
 import com.comicstore.apigateway.presentationlayer.Client.ClientResponseModel;
 import com.comicstore.apigateway.utils.HttpErrorInfo;
+import com.comicstore.apigateway.utils.exceptions.Clients.DuplicateClientInformationException;
 import com.comicstore.apigateway.utils.exceptions.InvalidInputException;
+import com.comicstore.apigateway.utils.exceptions.Clients.NoEmailAndPhoneException;
 import com.comicstore.apigateway.utils.exceptions.NotFoundException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @Component
@@ -34,30 +37,94 @@ public class ClientServiceClient {
     }
 
     public ClientResponseModel getClientAggregateById(String clientId) {
-        ClientResponseModel clientResponseModel;
+        ClientResponseModel clientResponseModel = new ClientResponseModel();
         try {
-            String url = CLIENT_SERVICE_BASE_URL + "/clients/" + clientId;
+            String url = CLIENT_SERVICE_BASE_URL +"/clients/"+ clientId;
             clientResponseModel = restTemplate
                     .getForObject(url, ClientResponseModel.class);
 
             log.debug("5. Received in API-Gateway Client Service Client getClientAggregate with clientResponseModel : " + clientResponseModel.getClientId());
         } catch (HttpClientErrorException ex) {
             log.debug("5.Error");
-            throw handleHttpClientException(ex);
+            handleHttpClientException(ex);
         }
         return clientResponseModel;
     }
 
-    private RuntimeException handleHttpClientException(HttpClientErrorException ex) {
-        if (ex.getStatusCode() == NOT_FOUND) {
-            return new NotFoundException(getErrorMessage(ex));
+    public ClientResponseModel createNewClient(ClientRequestModel clientRequestModel){
+        ClientResponseModel clientResponseModel = new ClientResponseModel();
+        try {
+            String url = CLIENT_SERVICE_BASE_URL;
+            clientResponseModel =
+                    restTemplate.postForObject(url, clientRequestModel,
+                            ClientResponseModel.class);
+
+            log.debug("5. Received in createNewClient");
+        } catch (HttpClientErrorException ex) {
+            log.debug("5.");
+            handleHttpClientException(ex);
         }
-        if (ex.getStatusCode() == UNPROCESSABLE_ENTITY) {
-            return new InvalidInputException(getErrorMessage(ex));
+        return clientResponseModel;
+    }
+    public void updateClient(ClientRequestModel clientRequestModel, String clientId){
+        ClientResponseModel clientResponseModel = new ClientResponseModel();
+        try {
+            String url = CLIENT_SERVICE_BASE_URL + "/clients/" + clientId ;
+            restTemplate.put(url, clientRequestModel);
+
+            log.debug("5. Received in updateClient");
+        } catch (HttpClientErrorException ex) {
+            log.debug("5.");
+            handleHttpClientException(ex);
         }
+    }
+
+    public void deleteClient(String clientId){
+        try {
+            String url = CLIENT_SERVICE_BASE_URL + "/clients/" + clientId;
+            restTemplate.delete(url);
+
+            log.debug("5. Received in delete client");
+        } catch (HttpClientErrorException ex) {
+            log.debug("5.delete");
+            handleHttpClientException(ex);
+        }
+    }
+
+    public ClientResponseModel[] getAllClientFromStoreId(String storeId){
+        ClientResponseModel clientResponseModels[] = null;
+        try {
+            String url = CLIENT_SERVICE_BASE_URL +"/"+ storeId + "/clients";
+            clientResponseModels = restTemplate
+                    .getForObject(url, ClientResponseModel[].class);
+            log.debug("5. Received in get store clients");
+        } catch (HttpClientErrorException ex) {
+            log.debug("5. delete");
+            handleHttpClientException(ex);
+        }
+        return clientResponseModels;
+    }
+
+
+    private void handleHttpClientException(HttpClientErrorException ex) {
+
+        if(ex.getStatusCode() == HttpStatus.BAD_REQUEST){
+            throw new NoEmailAndPhoneException(getErrorMessage(ex));
+        }
+        if(ex.getStatusCode() == CONFLICT){
+            throw new DuplicateClientInformationException(getErrorMessage(ex));
+        }
+        if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+            throw new NotFoundException(getErrorMessage(ex));
+        }
+        if (ex.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+            throw new InvalidInputException(getErrorMessage(ex));
+        }
+
+
         log.warn("Got a unexpected HTTP error: {}, will rethrow it", ex.getStatusCode());
         log.warn("Error body: {}", ex.getResponseBodyAsString());
-        return ex;
+        throw ex;
     }
     private String getErrorMessage(HttpClientErrorException ex) {
         try {

@@ -24,21 +24,6 @@ public interface ClientResponseMapper {
     List<ClientResponseModel> entityListToResponseModelList(List<Client> clients);
 
 
-    @AfterMapping
-    default void addLinks(@MappingTarget ClientResponseModel model, Client client){
-        Link selfLink = linkTo(methodOn(ClientController.class)
-                .getClientById(model.getClientId()))
-                .withSelfRel();
 
-        model.add(selfLink);
-
-        Link clientsLink = linkTo(methodOn(ClientController.class)
-                .getClients())
-                .withRel("Clients");
-
-        model.add(clientsLink);
-
-      //Add store link
-    }
 
 }

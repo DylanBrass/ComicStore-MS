@@ -14,8 +14,6 @@ import java.util.regex.Pattern;
 @RequestMapping("api/lab2/v1/stores")
 public class ClientController {
 
-    private final String emailRegex = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-    private final String phoneRegex = "^(\\+\\d{1,2}\\s)?\\(?\\d{3}\\)?[\\s.-]\\d{3}[\\s.-]\\d{4}$";
 
     ClientService clientService;
 
@@ -40,7 +38,6 @@ public class ClientController {
 
     @PutMapping("/clients/{clientId}")
     public ResponseEntity<ClientResponseModel> updateClient(@PathVariable String clientId,@Valid @RequestBody ClientRequestModel clientRequestModel) {
-        ClientExceptions(clientRequestModel);
 
 
         return ResponseEntity.status(HttpStatus.OK).body(clientService.updateClient(clientRequestModel, clientId));
@@ -48,24 +45,12 @@ public class ClientController {
 
     @PostMapping("/clients")
     public ResponseEntity<ClientResponseModel> createClient(@Valid @RequestBody ClientRequestModel clientRequestModel) {
-        ClientExceptions(clientRequestModel);
 
 
         return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(clientRequestModel));
     }
 
-    private void ClientExceptions(@RequestBody @Valid ClientRequestModel clientRequestModel) {
-        if (clientRequestModel.getTotalBought() < 0)
-            throw new InvalidInputException("A client can't have a negative total bought : " + clientRequestModel.getTotalBought());
 
-        if (clientRequestModel.getEmail() != null && !Pattern.compile(emailRegex).matcher(clientRequestModel.getEmail())
-                .matches())
-            throw new InvalidInputException("Email is in an invalid format ! : " + clientRequestModel.getEmail());
-
-        if (clientRequestModel.getPhoneNumber() != null && !Pattern.compile(phoneRegex).matcher(clientRequestModel.getPhoneNumber())
-                .matches())
-            throw new InvalidInputException("Phone number is in an invalid format ! : " + clientRequestModel.getPhoneNumber());
-    }
 
     @DeleteMapping("/clients/{clientId}")
     public ResponseEntity<Void> deleteClient(@PathVariable String clientId) {

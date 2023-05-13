@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 public class CardGameController {
 
     private final CardGameService cardGameService;
-    private final String dateFormat = "^\\d{4}-\\d{2}-\\d{2}$";
 
 
     public CardGameController(CardGameService cardGameService) {
@@ -35,9 +34,6 @@ public class CardGameController {
 
     @PostMapping("/{cardGameId}/sets")
     public ResponseEntity<SetResponseModel> addSetToCardGame(@PathVariable String cardGameId,@Valid @RequestBody SetRequestModel setRequestModel){
-        if (!Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate()).matches())
-            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(cardGameService.addCardGameSet(cardGameId,setRequestModel));
     }
 
@@ -63,9 +59,6 @@ public class CardGameController {
     //
     @PostMapping()
     public ResponseEntity<CardGameResponseModel> addCardGame(@Valid @RequestBody CardGameRequestModel cardGameRequestModel){
-        if (!Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
-            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + cardGameRequestModel.getReleaseDate());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(cardGameService.addCardGame(cardGameRequestModel));
     }
 //
@@ -78,8 +71,6 @@ public class CardGameController {
 //
     @PutMapping("/sets/{setId}")
     ResponseEntity<SetResponseModel> updateSet(@Valid @RequestBody SetRequestModel setRequestModel,@PathVariable String setId){
-        if (!Pattern.compile(dateFormat).matcher(setRequestModel.getReleaseDate()).matches())
-            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + setRequestModel.getReleaseDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(cardGameService.updateCardGameSet(setId,setRequestModel));
     }
@@ -87,8 +78,6 @@ public class CardGameController {
 
     @PutMapping("/{cardId}")
     ResponseEntity<CardGameResponseModel> updateCardGame(@PathVariable String cardId, @Valid @RequestBody CardGameRequestModel cardGameRequestModel){
-        if (!Pattern.compile(dateFormat).matcher(cardGameRequestModel.getReleaseDate().toString()).matches())
-            throw new InvalidInputException("Release date entered is not in format YYYY-MM-DD : " + cardGameRequestModel.getReleaseDate());
 
         return ResponseEntity.status(HttpStatus.OK).body(cardGameService.updateCardGame(cardId,cardGameRequestModel));
     }

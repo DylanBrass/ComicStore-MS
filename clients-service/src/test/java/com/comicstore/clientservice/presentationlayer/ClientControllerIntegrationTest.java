@@ -355,7 +355,7 @@ class ClientControllerIntegrationTest {
 
     private ClientRequestModel createNewClientRequestModel(String storeIdentifier, String fn, String ln,String email,String phone, Double total){
         return ClientRequestModel.builder()
-                .storeIdentifier(storeIdentifier)
+                .storeId(storeIdentifier)
                 .firstName(fn)
                 .lastName(ln)
                 .email(email)

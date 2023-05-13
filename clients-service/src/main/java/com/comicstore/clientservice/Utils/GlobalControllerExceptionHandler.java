@@ -30,7 +30,7 @@ public class GlobalControllerExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(NoEmailAndPhoneException.class)
     public HttpErrorInfo handleNoEmailAndPhoneException(WebRequest request, Exception ex) {
-        return createHttpErrorInfo(NOT_FOUND, request, ex);
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
     }
 
 

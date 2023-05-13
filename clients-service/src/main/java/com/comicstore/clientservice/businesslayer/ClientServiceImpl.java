@@ -1,6 +1,7 @@
 package com.comicstore.clientservice.businesslayer;
 
 import com.comicstore.clientservice.Utils.Exceptions.DuplicateClientInformationException;
+import com.comicstore.clientservice.Utils.Exceptions.InvalidInputException;
 import com.comicstore.clientservice.Utils.Exceptions.NoEmailAndPhoneException;
 import com.comicstore.clientservice.Utils.Exceptions.NotFoundException;
 import com.comicstore.clientservice.datalayer.Client;
@@ -10,6 +11,7 @@ import com.comicstore.clientservice.datalayer.StoreIdentifier;
 import com.comicstore.clientservice.datamapperlayer.ClientResponseMapper;
 import com.comicstore.clientservice.presentationlayer.ClientRequestModel;
 import com.comicstore.clientservice.presentationlayer.ClientResponseModel;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,8 +80,17 @@ public class ClientServiceImpl implements ClientService {
 
         client.setClientIdentifier(new ClientIdentifier());
         //need to check if store exists
-        client.setStoreIdentifier(new StoreIdentifier(clientRequestModel.getStoreIdentifier()));
-        return clientResponseMapper.entityToResponseModel(clientRepository.save(client));
+        client.setStoreIdentifier(new StoreIdentifier(clientRequestModel.getStoreId()));
+        try {
+            return clientResponseMapper.entityToResponseModel(clientRepository.save(client));
+        }
+        catch (DataAccessException ex){
+            if(ex.getMessage().contains("constraint [email]") ||
+                    ex.getCause().toString().contains("ConstraintViolationException")){
+                throw new DuplicateClientInformationException("Email provided is a duplicate: "+ clientRequestModel.getEmail() );
+            }
+            else throw new InvalidInputException("An unknown error as occurred");
+        }
     }
 
     @Override
@@ -114,12 +125,12 @@ public class ClientServiceImpl implements ClientService {
         client.setClientIdentifier(existingClient.getClientIdentifier());
         client.setId(existingClient.getId());
 //check if store exists
-        //if(clientRequestModel.getStoreIdentifier() == null) {
+        if(clientRequestModel.getStoreId() == null) {
         client.setStoreIdentifier(existingClient.getStoreIdentifier());
-        //}
-        //else {
-            //client.setStoreIdentifier(new StoreIdentifier(clientRequestModel.getStoreIdentifier()));
-        //}
+        }
+        else {
+            client.setStoreIdentifier(new StoreIdentifier(clientRequestModel.getStoreId()));
+        }
 
         return clientResponseMapper.entityToResponseModel(clientRepository.save(client));
     }
